@@ -2,6 +2,7 @@ function NuclearToggle(o,i,v){
     this.position = o;
     this.id = i;
     this.value = v;
+    this.capacityFactor = 0.9;
 }
 
 function ResourceSlider(min, max, i, val,type,CF){
@@ -31,9 +32,20 @@ NuclearToggle.prototype.toggle = function() {
 }
 NuclearToggle.prototype.setID = function(x) { this.id = x }
 NuclearToggle.prototype.setValue = function(x) { this.value = x }
+NuclearToggle.prototype.getElectricityGenerated = function() {
+    return (8640*this.value*this.capacityFactor)/1000;
+}
 
 //Resource Sliders Methods
 ResourceSlider.prototype.setValue = function(x) { this.value = x }
+ResourceSlider.prototype.getElectricityGenerated = function() {
+    return (8640*this.value*this.capacityFactor)/1000;
+}
+
+
+ResourceConstant.prototype.getElectricityGenerated = function() {
+    return (8640*this.value*this.capacityFactor)/1000;
+}
 var nucToggles = {
     "chinsan1": new NuclearToggle(false,"chinsan1",636),
     "chinsan2": new NuclearToggle(false,"chinsan2",636),
@@ -102,39 +114,28 @@ function truncateDecimals (num, digits) {
 }
 
 function COMP_electricityGenerated(){
-//All ON Nuclear Powerplants x 8640 x .9 / 1000
-//Selected Value for Coal x 8640 x .84 / 1000
-//Selected Value for Oil x 8640 x .21 / 1000
-//Selected Value for Gas x 8640 x .53 / 1000
-//Selected Value for Solar x 8640 x .15 / 1000
-//Selected Value for Wind x 8640 x .3 / 1000
-//Garbage/Biogas x 8640 x .65 / 1000
-//Conventional Hydropower x 8640 x .4 / 1000
     var TOTAL = 0;
     for(var item in nucToggles){
         var tempItem = nucToggles[item]
         if(tempItem.position == true){ 
-            TOTAL+=(8640*tempItem.value*0.9)/1000;
-            console.log(TOTAL); 
-        }   
+            TOTAL += tempItem.getElectricityGenerated();
+        }  
     }
     for(var item in resourceSliders){
         var tempItem = resourceSliders[item]
-        TOTAL+=(8640*tempItem.value*tempItem.capacityFactor)/1000; 
-        console.log(TOTAL);
+        TOTAL+= tempItem.getElectricityGenerated();
     }   
     for(var item in constants){
         var tempItem = constants[item]
-        TOTAL+=(8640*tempItem.value*tempItem.capacityFactor)/1000; 
-        console.log(TOTAL);
+        TOTAL+= tempItem.getElectricityGenerated(); 
     }
 
     return TOTAL;
     
 }
 
-var COMP_cecCoal = (((8640*resourceSliders["coal"].value*resourceSliders["coal"].capacityFactor)/1000)-78713540)*.0008;
-var COMP_cecNaturalGas = (((8640*resourceSliders["coal"].value*resourceSliders["coal"].capacityFactor)/1000)-70779352)*.0008;
+var COMP_cecCoal = (nucToggles["coal"].getElectricityGenerated-78713540)*.0008;
+var COMP_cecNaturalGas = (nucToggles["gas"].getElectricityGenerated-70779352)*.0008;
 
 $(document).ready(function(){
     applyToSliders(resourceSliders);
