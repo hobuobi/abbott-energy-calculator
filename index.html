@@ -1,0 +1,102 @@
+<DOCTYPE! html>
+    
+<html>
+    <title>CALCULATOR TEST</title>
+    <head>
+        <!-- CSS -->
+        
+        <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet">
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+        <link href="css/main.css" rel="stylesheet">
+        
+        <!-- JS -->
+        <script src="js/jquery.min.js"></script>
+        <script src="js/main.js"></script>
+        
+    </head>
+<body>
+    <div class="col-md-6" id="container-I">
+        <label class="toggle">
+        <input type="checkbox" id="chinsan1" >
+        <div class="toggle">CHINSAN 1</div>
+        </label>
+        
+        <label class="toggle">
+        <input type="checkbox" id="chinsan2">
+        <div class="toggle">CHINSAN 2</div>
+        </label>
+        
+        <label class="toggle">
+        <input type="checkbox" id="kuosheng1" >
+        <div class="toggle">KUOSHENG 1</div>
+        </label>
+        
+        <label class="toggle">
+        <input type="checkbox" id="kuosheng2" >
+        <div class="toggle">KUOSHENG 2</div>
+        </label>
+        
+        <label class="toggle">
+        <input type="checkbox" id="maanshan1" >
+        <div class="toggle">MAANSHAN 1</div>
+        </label>
+        
+        <label class="toggle">
+        <input type="checkbox" id="maanshan2" >
+        <div class="toggle">MAANSHAN 2</div>
+        </label>
+        
+        <label class="toggle">
+        <input type="checkbox" id="lungmen1" >
+        <div class="toggle">LUNGMEN 1</div>
+        </label>
+
+        <label class="toggle">
+        <input type="checkbox" id="lungmen2" >
+        <div class="toggle">LUNGMEN 2</div>
+        </label>
+        
+
+        <div class="slide-holder">
+            <div class="slide-title">COAL</div>
+           <input type="range" id="coal">
+            <div class="slide-value">VALUE</div>
+        </div>
+        
+        <div class="slide-holder">
+            <div class="slide-title">OIL</div>
+            <input type="range" id="oil">
+            <div class="slide-value">VALUE</div>
+        </div>
+        
+        <div class="slide-holder">
+            <div class="slide-title">NATURAL GAS</div>
+            <input type="range" id="gas">
+            <div class="slide-value">VALUE</div>
+        </div>
+        
+        <div class="slide-holder">
+            <div class="slide-title">SOLAR</div>
+            <input type="range" id="solarpv">
+            <div class="slide-value">VALUE</div>
+        </div>
+        <div class="slide-holder">
+            <div class="slide-title">WIND</div>
+            <input type="range" id="wind">
+            <div class="slide-value">VALUE</div>
+        </div>
+        
+        <button class="btn btn-primary" id="submit" >COMPUTE TOTAL INSTALLED CAPACITY</button>
+        
+    </div>
+    <div class="col-md-6" id="container-O">
+        
+        <h1>TOTAL INSTALLED CAPACITY: <span id="TIC"></span></h1>
+        <h2>RESERVE CAPACITY: <span id="RC"></span></h2>
+        <h2>ELECTRICITY GENERATED: <span id="EG"></span></h2>
+    </div>   
+</body>
+
+</html>
+    
+    
