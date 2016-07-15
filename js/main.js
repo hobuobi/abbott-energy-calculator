@@ -90,6 +90,17 @@ function COMP_reserveCapacity(){
     return (SUPPLY-DEMAND)/DEMAND;
 }
 
+
+function truncateDecimals (num, digits) {
+    var numS = num.toString(),
+        decPos = numS.indexOf('.'),
+        substrLength = decPos == -1 ? numS.length : 1 + decPos + digits,
+        trimmedResult = numS.substr(0, substrLength),
+        finalResult = isNaN(trimmedResult) ? 0 : trimmedResult;
+
+    return parseFloat(finalResult);
+}
+
 function COMP_electricityGenerated(){
 //All ON Nuclear Powerplants x 8640 x .9 / 1000
 //Selected Value for Coal x 8640 x .84 / 1000
@@ -140,7 +151,7 @@ $(document).ready(function(){
         console.log(val)
         resourceSliders[id].setValue(+val);
         console.log(resourceSliders[id]);
-        $(this).next().text(val);
+        $(this).next().text(val+" MW");
         })
         
     })
@@ -148,7 +159,7 @@ $(document).ready(function(){
     
     function COMP(){
         $("#TIC").text(Math.round(COMP_totalInstalledCapacity()));
-        $("#RC").text(COMP_reserveCapacity());
+        $("#RC").text(truncateDecimals(COMP_reserveCapacity()*100,2)+"%");
         $("#EG").text(Math.round(COMP_electricityGenerated()));
         
     }
