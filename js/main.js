@@ -197,10 +197,10 @@ $(document).ready(function(){
         resourceSliders[id].setValue(+val);
         $(this).next().text(val+" MW");
         COMP();
-        updateVisualization();
-        })
         
+        })  
     })
+    $("input[type=range]").mouseup(updateVisualization)
     $("#submit").click(COMP);
     
     function COMP(){
@@ -226,7 +226,7 @@ $(document).ready(function(){
         
     var arc = d3.svg.arc()
         .outerRadius(radius - 10)
-        .innerRadius(0);
+        .innerRadius(radius/2);
 
     var labelArc = d3.svg.arc()
         .outerRadius(radius - 40)
@@ -240,20 +240,23 @@ $(document).ready(function(){
     .append("g")
         .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
-function updateVisualization(){
+
     
     console.log("UPDATING");
     var g = svg.selectAll(".arc")
-        .data(function(){
-            console.log(pie(DATA))
-            return pie(DATA)
-        })
+        .data(pie(DATA))
         .attr("class", "arc");
 
     g.enter().append("path")
         .attr("d", arc)
         .style("fill", function(d) { return color(d.data.value); });
-
+        
+function updateVisualization(){
+    g.data(pie(DATA))
+    g.transition().duration(700)
+            .attr("d", arc)
+            
+            
 }
    
  });
