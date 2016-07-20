@@ -1,7 +1,7 @@
 // DATA MODEL
 
 var DATA= [];
-
+var mode = "value";
 function NuclearToggle(o,i,v){
     this.position = o;
     this.id = i;
@@ -37,14 +37,17 @@ NuclearToggle.prototype.toggle = function() {
     if(this.position == true){ 
         this.position = false
         findByKey(DATA,this.id).value = 0;
+        findByKey(DATA,this.id).electricity = 0;
     }
     else{
         this.position = true
         findByKey(DATA,this.id).value = this.value;
+        findByKey(DATA,this.id).electricity = this.getElectricityGenerated();
     }
 }
 NuclearToggle.prototype.setID = function(x) { this.id = x }
 NuclearToggle.prototype.setValue = function(x) { this.value = x }
+NuclearToggle.prototype.setElectricityGenerated = function(x) { this.electricity = x }
 NuclearToggle.prototype.getElectricityGenerated = function() {
     return (8640*this.value*this.capacityFactor)/1000;
 }
@@ -80,7 +83,7 @@ var resourceSliders = {
     "gas": new ResourceSlider(0,26090, "gas", 13045,["FF"],.53)
 }
 var constants = {
-    "biogas": new ResourceConstant("biogas", 623,.65,[""]),
+    "biogas": new ResourceConstant("biogas", 623,.65,["R"]),
     "hydrostorage": new ResourceConstant("hydrostorage",2602,1.0,["LC","R"]),
     "hydropower": new ResourceConstant("hydropower", 2102,.4,["LC", "R"]),
     "geothermal": new ResourceConstant("geothermal", 0.4,0,["LC", "R"])
@@ -89,6 +92,7 @@ for(var item in nucToggles){
     DATA.push({
         "name" : nucToggles[item].id,
         "value": 0,
+        "electricity": 0,
         "type": nucToggles[item].type
     });
 }
@@ -96,6 +100,7 @@ for(var item in resourceSliders){
     DATA.push({
         "name" : resourceSliders[item].id,
         "value": resourceSliders[item].value,
+        "electricity": resourceSliders[item].getElectricityGenerated(),
         "type": resourceSliders[item].type
     });
 }
@@ -103,6 +108,7 @@ for(var item in constants){
     DATA.push({
         "name" : constants[item].id,
         "value": constants[item].value,
+        "electricity": constants[item].getElectricityGenerated(),
         "type": constants[item].type
     });
 }
@@ -184,9 +190,10 @@ var COMP_cecNaturalGas = (resourceSliders["gas"].getElectricityGenerated()-70779
 
 $(document).ready(function(){
     applyToSliders(resourceSliders);
-    $("input:checkbox").change(function() {
+    $("input.pplant:checkbox").change(function() {
         var id = $(this).attr("id");
         nucToggles[id].toggle();
+        nucToggles[id].setElectricityGenerated();
         updateVisualization();
     })
     
@@ -197,7 +204,6 @@ $(document).ready(function(){
         resourceSliders[id].setValue(+val);
         $(this).next().text(val+" MW");
         COMP();
-        
         })  
     })
     $("input[type=range]").mouseup(updateVisualization)
@@ -217,12 +223,20 @@ $(document).ready(function(){
             $("#"+key).attr("val", sliderObj[key].value); 
         }
     }
+    $(".data-switch").change(function(){
+        toggle();
+    })
     
-    var width = 300,
-    height = 300,
+
+
+var width = 500,
+    height = 400,
     radius = Math.min(width, height) / 2;
 
-    var color = d3.scale.category20();
+       
+    var color = d3.scale.ordinal(["#CCC","royalblue","green","teal"])
+        .range(["#555","royalblue","green","teal"])
+        .domain([["FF"],["LC"],["R"],["LC","R"]])
         
     var arc = d3.svg.arc()
         .outerRadius(radius - 10)
@@ -234,13 +248,12 @@ $(document).ready(function(){
     var pie = d3.layout.pie()
         .sort(null)
         .value(function(d) { return d.value; });
-    var svg = d3.select("#container-O").append("svg")
+    var svg = d3.select("#vis-canvas")
         .attr("width", width)
         .attr("height", height)
     .append("g")
         .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
-
-
+        
     
     console.log("UPDATING");
     var g = svg.selectAll(".arc")
@@ -249,14 +262,42 @@ $(document).ready(function(){
 
     g.enter().append("path")
         .attr("d", arc)
-        .style("fill", function(d) { return color(d.data.value); });
+        .style("fill", function(d) { 
+            console.log(d.data.type)
+            console.log(color(d.data.type))
+            return color(d.data.type); })
+        .style("stroke", "white");
+    function total(){
+        var total = 0;
+        for(var x in DATA){ total += x[mode] }
+        return total;
+    }
+    g
+        .on("mouseover", function(d){
+            $("#detail-name").text(d.data.name.toUpperCase());
+            $("#detail-value").text(function(){
+                return d.data[mode]+" ("+truncateDecimals(d.data[mode]*100/COMP_totalInstalledCapacity(),2)+"%)"
+            });
+            $(".detail-label").css("border-left-color",color(d.data.type))
+        });
         
+    
+    $("#tog").click(toggle);
+        function toggle(){
+        if(mode == "value")
+        {
+            mode = "electricity"
+        }
+        else{
+            mode = "value"
+        }
+        updateVisualization();
+    }
 function updateVisualization(){
+    pie.value(function(d) { return d[mode]})
     g.data(pie(DATA))
     g.transition().duration(700)
-            .attr("d", arc)
-            
-            
+            .attr("d", arc)      
 }
    
  });
