@@ -76,8 +76,8 @@ var nucToggles = {
 
 }
 var resourceSliders = {
-    "solarpv": new ResourceSlider(669,20000,"solarpv", 10000,["R"],.15),
-    "wind": new ResourceSlider(652, 4000, "wind", 2500,["R"],.3), 
+    "solarpv": new ResourceSlider(669,20000,"solarpv", 10000,["LC","R"],.15),
+    "wind": new ResourceSlider(652, 4000, "wind", 2500,["LC","R"],.3), 
     "coal": new ResourceSlider(0,15297,"coal", 10000,["FF"],.81),
     "oil": new ResourceSlider(0, 3325, "oil", 1675,["FF"],.21), 
     "gas": new ResourceSlider(0,26090, "gas", 13045,["FF"],.53)
