@@ -86,7 +86,7 @@ var constants = {
     "biogas": new ResourceConstant("biogas", 623,.65,["R"]),
     "hydrostorage": new ResourceConstant("hydrostorage",2602,1.0,["LC","R"]),
     "hydropower": new ResourceConstant("hydropower", 2102,.4,["LC", "R"]),
-    "geothermal": new ResourceConstant("geothermal", 0.4,0,["LC", "R"])
+    "geothermal": new ResourceConstant("geothermal", 50,0,["LC", "R"])
 }
 for(var item in nucToggles){
     DATA.push({
@@ -139,8 +139,8 @@ function COMP_totalInstalledCapacity(){
 }
 
 function COMP_reserveCapacity(){
-    var SUPPLY = COMP_totalInstalledCapacity();
-    var DEMAND = demand;
+    var SUPPLY = COMP_totalInstalledCapacity(); console.log(SUPPLY)
+    var DEMAND = demand; console.log(DEMAND)
     
     return (SUPPLY-DEMAND)/DEMAND;
 }
@@ -185,34 +185,59 @@ function COMP_electricityGenerated(){
     
 }
 
-var COMP_cecCoal = (resourceSliders["coal"].getElectricityGenerated()-78713540)*.0008;
-var COMP_cecNaturalGas = (resourceSliders["gas"].getElectricityGenerated()-70779352)*.0008;
+function COMP_cecCoal(){ return (resourceSliders["coal"].getElectricityGenerated()-78713540)*.0008 }
+function COMP_cecNaturalGas(){ return (resourceSliders["gas"].getElectricityGenerated()-70779352)*.0003 }
 
 $(document).ready(function(){
+    var default_id = "____";
+    var default_value = "____";
     applyToSliders(resourceSliders);
+    $("select").change(function(){
+        demand = +($(this).val());
+        COMP();
+    })
     $("input.pplant:checkbox").change(function() {
         var id = $(this).attr("id");
         nucToggles[id].toggle();
         nucToggles[id].setElectricityGenerated();
+        COMP();
+        if(id == default_id){
+            default_value= item[mode]+" ("+truncateDecimals(item[mode]*100/COMP_totalInstalledCapacity(),2)+"%)"
+            $("#detail-name").text(item.name.toUpperCase());
+            $("#detail-value").text(function(){
+                return item[mode]+" ("+truncateDecimals(item[mode]*100/COMP_totalInstalledCapacity(),2)+"%)"
+            });
+        }
         updateVisualization();
     })
     
     $("input[type=range]").mousedown(function() {
         $("input[type=range]").mousemove(function(){
             var id = $(this).attr("id");
-        var val = document.getElementById(id).value
-        resourceSliders[id].setValue(+val);
-        $(this).next().text(val+" MW");
-        COMP();
+            var val = document.getElementById(id).value
+            resourceSliders[id].setValue(+val);
+            $(this).next().text(val+" MW");
+            if(id == default_id)
+            {
+                var item = findByKey(DATA,id)
+                default_value = item[mode]+" ("+truncateDecimals(item[mode]*100/COMP_totalInstalledCapacity(),2)+"%)";
+                $("#detail-name").text(item.name.toUpperCase());
+                $("#detail-value").text(function(){
+                    return item[mode]+" ("+truncateDecimals(item[mode]*100/COMP_totalInstalledCapacity(),2)+"%)"
+                });
+            }
+            $("#CEC").text(Math.round(COMP_cecCoal()+COMP_cecNaturalGas()));
+            COMP();
+            updateVisualization();
         })  
     })
     $("input[type=range]").mouseup(updateVisualization)
     $("#submit").click(COMP);
-    
+    $("#CEC").text(Math.round(COMP_cecCoal()+COMP_cecNaturalGas()));
     function COMP(){
-        $("#TIC").text(Math.round(COMP_totalInstalledCapacity()));
+        $("#TIC").text(Math.round(COMP_totalInstalledCapacity())+" MW");
         $("#RC").text(truncateDecimals(COMP_reserveCapacity()*100,2)+"%");
-        $("#EG").text(Math.round(COMP_electricityGenerated()));
+        $("#EG").text(Math.round(COMP_electricityGenerated())+" MW");
         
     }
     
@@ -220,11 +245,21 @@ $(document).ready(function(){
         for(var key in sliderObj){
             $("#"+key).attr("min", sliderObj[key].min);
             $("#"+key).attr("max", sliderObj[key].max);
-            $("#"+key).attr("val", sliderObj[key].value); 
+            $("#"+key).attr("val", sliderObj[key].value);
+            $("#"+key).next().text(sliderObj[key].value+" MW")
+            COMP(); 
         }
     }
     $(".data-switch").change(function(){
-        toggle();
+        if($(this).prop("checked") == true){
+            mode = "electricity"
+            $("#mode").text("TOTAL INSTALLED CAPACITY")
+        }
+        else{
+            mode = "value"
+            $("#mode").text("ELECTRICITY GENERATED")
+        }
+        updateVisualization();
     })
     
 
@@ -274,16 +309,28 @@ var width = 500,
     }
     g
         .on("mouseover", function(d){
+            d3.select(this).transition().duration(300).attr('opacity',0.5);
             $("#detail-name").text(d.data.name.toUpperCase());
             $("#detail-value").text(function(){
                 return d.data[mode]+" ("+truncateDecimals(d.data[mode]*100/COMP_totalInstalledCapacity(),2)+"%)"
             });
             $(".detail-label").css("border-left-color",color(d.data.type))
-        });
-        
+        })
+        .on("mouseout", function(d){
+            d3.select(this).transition().duration(300).attr('opacity',1);
+            $("#detail-name").text(default_id.toUpperCase());
+            $("#detail-value").text(default_value);
+        })
+        .on("click", function(d){
+            default_id= d.data.name;
+            default_value = d.data[mode]+" ("+truncateDecimals(d.data[mode]*100/COMP_totalInstalledCapacity(),2)+"%)"
+        })
     
-    $("#tog").click(toggle);
-        function toggle(){
+    if($("#detail-name").text() != "SELECT A SEGMENT")
+    {
+        
+    }
+    function toggle(){
         if(mode == "value")
         {
             mode = "electricity"

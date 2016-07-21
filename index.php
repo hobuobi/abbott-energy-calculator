@@ -7,8 +7,9 @@
         
         <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700|Roboto:300,300i,700" rel="stylesheet">
         <link href="css/bootstrap.min.css" rel="stylesheet">
-        <link href="css/main.css" rel="stylesheet">
         
+        <link href="css/main.css" rel="stylesheet">
+        <link href="css/slider.css" rel="stylesheet">
         <!-- JS -->
         <script src="js/jquery.min.js"></script>
         <script src="js/d3.min.js"></script>
@@ -20,6 +21,16 @@
         <img id="logo" src="images/logo.png">
     </div>
     <div class="col-md-6" id="container-I">
+        <div style="position:relative;margin:0px;width:100%">
+        <h2>SELECT DEMAND</h2>
+        <select style="position:absolute; top:0px; right:0px">
+            <option value="42423">Taipower - 42423 MW</option>
+            <option value="35707">Net Zero (2015 Levels) - 35707 MW</option>
+            <option value="32950">1% YR Reduction - 32950 MW</option>
+            <option value="30380">2% YR Reduction - 30380 MW</option>
+        </select>
+        </div>
+        <hr />
         <h2>SELECT POWER PLANTS</h2>
         <hr />
         <label class="toggle">
@@ -98,10 +109,14 @@
         
     </div>
     <div class="col-md-6" id="container-O">
-
-        <input type="checkbox" class="data-switch">Electricity Generated?
-
-        <h1>TOTAL INSTALLED CAPACITY: <span id="TIC"></span></h1>
+        <div style="position: relative;margin:0px">
+        <label class="switch">
+        <input type="checkbox" class="data-switch">
+        <div class="slider round"></div>
+        </label>
+        <span style="position:absolute; bottom:10px;margin-left:15px"><i>Toggle to view data for <strong><span id="mode">ELECTRICITY GENERATED</span>.</strong></i></span>
+        </div>
+        <h2>TOTAL INSTALLED CAPACITY: <span id="TIC"></span></h1>
         <h2>RESERVE CAPACITY: <span id="RC"></span></h2>
         <h2>ELECTRICITY GENERATED: <span id="EG"></span></h2>
         <svg id="vis-canvas"></svg>
@@ -109,6 +124,8 @@
             <span id="detail-name">SELECT A SEGMENT</span>
             <span id="detail-value">_____</span>
         </div>
+        
+        <h2>CARBON EMISSIONS CHANGE UNIT: <span id="CEC"></span></h2>
     </div>   
 </body>
     

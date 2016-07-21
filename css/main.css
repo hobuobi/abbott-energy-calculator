@@ -1,10 +1,24 @@
+*{
+    font-family: Roboto;
+    font-weight: 300;
+}
+body{
+        background-image: url("../images/gridTile.jpg");
+    background-repeat: repeat;
+}
 h1,h2,h3,h4,h5,h6 {
     font-family: Roboto, sans-serif;
     font-weight: 700;
 }
+
 p {
     font-family: "Roboto", sans-serif;
     font-weight: 300;
+}
+select{
+    float: right;
+    font-size: 1.3em;
+    padding: 10px;
 }
 #header{
     height: 50px;
@@ -20,11 +34,14 @@ p {
     background-color: #DDDDDD;
     box-shadow: 10px 0px 20px #AAA;
     padding: 20px;
+    z-index:3;
 }
 
 #container-O{
     min-height: 100%;
     padding: 25px;
+
+    z-index:2;
 }
 #vis-canvas {
     display: block;
@@ -92,13 +109,7 @@ p {
 .toggle input {
     display: none;
 }
-.switch{
-    position: absolute;
-    left:0px;
-    background-color: green;
-    width:300px;
-    height:100%;
-}
+
 input:checked + div.toggle{
     color: white;
     background-color: green; 
@@ -177,8 +188,11 @@ input[type=range]::-webkit-slider-thumb {
 .arc {
     stroke: #fff; 
     stroke-width: 3px;
+    
 }
-
+path{
+    cursor: pointer;
+}
 .detail-label
 {
     background-color: #DDDDDD;
