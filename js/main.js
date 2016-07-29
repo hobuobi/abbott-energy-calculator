@@ -6,7 +6,7 @@ function NuclearToggle(o,i,v){
     this.position = o;
     this.id = i;
     this.value = v;
-    this.capacityFactor = 0.9;
+    this.capacityFactor = 0.89;
     this.type = ["LC"];
 }
 
@@ -49,7 +49,7 @@ NuclearToggle.prototype.setID = function(x) { this.id = x }
 NuclearToggle.prototype.setValue = function(x) { this.value = x }
 NuclearToggle.prototype.setElectricityGenerated = function(x) { this.electricity = x }
 NuclearToggle.prototype.getElectricityGenerated = function() {
-    return (8640*this.value*this.capacityFactor)/1000;
+    return (8760*this.value*this.capacityFactor)/1000;
 }
 
 //Resource Sliders Methods
@@ -58,11 +58,11 @@ ResourceSlider.prototype.setValue = function(x) {
     findByKey(DATA,this.id).value = this.value;
     }
 ResourceSlider.prototype.getElectricityGenerated = function() {
-    return (8640*this.value*this.capacityFactor)/1000;
+    return (8760*this.value*this.capacityFactor)/1000;
 }
 
 ResourceConstant.prototype.getElectricityGenerated = function() {
-    return (8640*this.value*this.capacityFactor)/1000;
+    return (8760*this.value*this.capacityFactor)/1000;
 }
 var nucToggles = {
     "chinsan1": new NuclearToggle(false,"chinsan1",636),
@@ -76,16 +76,16 @@ var nucToggles = {
 
 }
 var resourceSliders = {
-    "solarpv": new ResourceSlider(669,20000,"solarpv", 10000,["LC","R"],.15),
+    "solarpv": new ResourceSlider(669,20000,"solarpv", 10000,["LC","R"],.13),
     "wind": new ResourceSlider(652, 4000, "wind", 2500,["LC","R"],.3), 
-    "coal": new ResourceSlider(0,15297,"coal", 10000,["FF"],.81),
+    "coal": new ResourceSlider(0,15297,"coal", 10000,["FF"],.84),
     "oil": new ResourceSlider(0, 3325, "oil", 1675,["FF"],.21), 
-    "gas": new ResourceSlider(0,26090, "gas", 13045,["FF"],.53)
+    "gas": new ResourceSlider(0,26090, "gas", 13045,["FF"],.52)
 }
 var constants = {
     "biogas": new ResourceConstant("biogas", 623,.65,["R"]),
     "hydrostorage": new ResourceConstant("hydrostorage",2602,1.0,["LC","R"]),
-    "hydropower": new ResourceConstant("hydropower", 2102,.4,["LC", "R"]),
+    "hydropower": new ResourceConstant("hydropower", 2102,.28,["LC", "R"]),
     "geothermal": new ResourceConstant("geothermal", 50,0,["LC", "R"])
 }
 for(var item in nucToggles){
@@ -134,13 +134,13 @@ function COMP_totalInstalledCapacity(){
         TOTAL+=tempItem.value; 
         
     }
-    console.log(TOTAL);
+
     return TOTAL;
 }
 
 function COMP_reserveCapacity(){
-    var SUPPLY = COMP_totalInstalledCapacity(); console.log(SUPPLY)
-    var DEMAND = demand; console.log(DEMAND)
+    var SUPPLY = COMP_totalInstalledCapacity();
+    var DEMAND = demand;
     
     return (SUPPLY-DEMAND)/DEMAND;
 }
@@ -202,15 +202,22 @@ $(document).ready(function(){
         nucToggles[id].setElectricityGenerated();
         COMP();
         if(id == default_id){
-            default_value= item[mode]+" ("+truncateDecimals(item[mode]*100/COMP_totalInstalledCapacity(),2)+"%)"
+            default_value= item[mode]+" ("+truncateDecimals(item[mode]*100/COMP_sum(mode),2)+"%)"
             $("#detail-name").text(item.name.toUpperCase());
             $("#detail-value").text(function(){
-                return item[mode]+" ("+truncateDecimals(item[mode]*100/COMP_totalInstalledCapacity(),2)+"%)"
+                return default_value
             });
         }
         updateVisualization();
     })
-    
+    function COMP_sum(MODE){
+        if(MODE == "electricity"){
+            return COMP_electricityGenerated();
+        }
+        else{
+            return COMP_totalInstalledCapacity();
+        }
+    }
     $("input[type=range]").mousedown(function() {
         $("input[type=range]").mousemove(function(){
             var id = $(this).attr("id");
@@ -220,7 +227,8 @@ $(document).ready(function(){
             if(id == default_id)
             {
                 var item = findByKey(DATA,id)
-                default_value = item[mode]+" ("+truncateDecimals(item[mode]*100/COMP_totalInstalledCapacity(),2)+"%)";
+                if(mode == "value"){ default_value = item[mode]+" ("+truncateDecimals(item[mode]*100/COMP_totalInstalledCapacity(),2)+"%)"; }
+                else{ default_value = item[mode]+" ("+truncateDecimals(item[mode]*100/COMP_electricityGenerated(),2)+"%)";}
                 $("#detail-name").text(item.name.toUpperCase());
                 $("#detail-value").text(function(){
                     return item[mode]+" ("+truncateDecimals(item[mode]*100/COMP_totalInstalledCapacity(),2)+"%)"
@@ -251,12 +259,11 @@ $(document).ready(function(){
         }
     }
     $(".data-switch").change(function(){
+        toggle();
         if($(this).prop("checked") == true){
-            mode = "electricity"
             $("#mode").text("TOTAL INSTALLED CAPACITY")
         }
         else{
-            mode = "value"
             $("#mode").text("ELECTRICITY GENERATED")
         }
         updateVisualization();
@@ -312,7 +319,8 @@ var width = 500,
             d3.select(this).transition().duration(300).attr('opacity',0.5);
             $("#detail-name").text(d.data.name.toUpperCase());
             $("#detail-value").text(function(){
-                return d.data[mode]+" ("+truncateDecimals(d.data[mode]*100/COMP_totalInstalledCapacity(),2)+"%)"
+                if(mode=="value"){ return d.data[mode]+" ("+truncateDecimals(d.data[mode]*100/COMP_totalInstalledCapacity(),2)+"%)" }
+                else{ return d.data[mode]+" ("+truncateDecimals(d.data[mode]*100/COMP_electricityGenerated(),2)+"%)" }
             });
             $(".detail-label").css("border-left-color",color(d.data.type))
         })
@@ -331,6 +339,7 @@ var width = 500,
         
     }
     function toggle(){
+        
         if(mode == "value")
         {
             mode = "electricity"
@@ -338,10 +347,9 @@ var width = 500,
         else{
             mode = "value"
         }
-        updateVisualization();
     }
 function updateVisualization(){
-    pie.value(function(d) { return d[mode]})
+    pie.value(function(d) { console.log(d[mode]); return d[mode]})
     g.data(pie(DATA))
     g.transition().duration(700)
             .attr("d", arc)      

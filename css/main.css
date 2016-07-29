@@ -93,10 +93,10 @@ select{
   padding: 20px;
   margin: 5px;
   border-radius: 32px;
-  
   font-family: "Montserrat";
   font-size: 1.25em;
   color: #333;
+  text-align: center;
   
   background-color: #ccc;
   
