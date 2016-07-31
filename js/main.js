@@ -265,7 +265,7 @@ $(document).ready(function(){
         findByKey(DATA,key).value = nucToggles[key].position == true ? nucToggles[key].value : 0;
         }
       }
-    
+
     $(".data-switch").change(function(){
         toggle();
         if($(this).prop("checked") == true){
@@ -279,8 +279,8 @@ $(document).ready(function(){
 
 
 
-var width = 500,
-    height = 400,
+var width = 300,
+    height = 300,
     radius = Math.min(width, height) / 2;
 
 
@@ -298,19 +298,34 @@ var width = 500,
     var pie = d3.layout.pie()
         .sort(null)
         .value(function(d) { return d.value; });
-    var svg = d3.select("#vis-canvas")
+    var pie_elec = d3.layout.pie()
+        .sort(null)
+        .value(function(d) { return d.electricity; });
+    var svg = d3.select("#vis-canvas-supply")
         .attr("width", width)
         .attr("height", height)
-    .append("g")
+        .append("g")
         .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
-
+    var svg_elec = d3.select("#vis-canvas-elec")
+      .attr("width",width)
+      .attr("height",height)
+      .append("g")
+      .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
     console.log("UPDATING");
     var g = svg.selectAll(".arc")
         .data(pie(DATA))
         .attr("class", "arc");
+    var g_elec = svg_elec.selectAll(".arc")
+        .data(pie_elec(DATA))
+        .attr("class","arc");
 
     g.enter().append("path")
+        .attr("d", arc)
+        .style("fill", function(d) {
+            return color(d.data.type); })
+        .style("stroke", "white");
+    g_elec.enter().append("path")
         .attr("d", arc)
         .style("fill", function(d) {
             return color(d.data.type); })
@@ -340,10 +355,25 @@ var width = 500,
             default_value = d.data[mode]+" ("+truncateDecimals(d.data[mode]*100/COMP_totalInstalledCapacity(),2)+"%)"
         })
 
-    if($("#detail-name").text() != "SELECT A SEGMENT")
-    {
-
-    }
+        g_elec
+            .on("mouseover", function(d){
+                d3.select(this).transition().duration(300).attr('opacity',0.5);
+                $("#detail-name").text(d.data.name.toUpperCase());
+                $("#detail-value").text(function(){
+                    if(mode=="value"){ return d.data[mode]+" ("+truncateDecimals(d.data[mode]*100/COMP_totalInstalledCapacity(),2)+"%)" }
+                    else{ return d.data[mode]+" ("+truncateDecimals(d.data[mode]*100/COMP_electricityGenerated(),2)+"%)" }
+                });
+                $(".detail-label").css("border-left-color",color(d.data.type))
+            })
+            .on("mouseout", function(d){
+                d3.select(this).transition().duration(300).attr('opacity',1);
+                $("#detail-name").text(default_id.toUpperCase());
+                $("#detail-value").text(default_value);
+            })
+            .on("click", function(d){
+                default_id= d.data.name;
+                default_value = d.data[mode]+" ("+truncateDecimals(d.data[mode]*100/COMP_totalInstalledCapacity(),2)+"%)"
+            })
     function toggle(){
 
         if(mode == "value")
@@ -355,7 +385,12 @@ var width = 500,
         }
     }
 function updateVisualization(){
-    pie.value(function(d) { return d[mode]})
+    pie.value(function(d) { return d.value})
+    g.data(pie(DATA))
+    g.transition().duration(700)
+            .attr("d", arc)
+
+    pie_elec.value(function(d) { return d.electricity})
     g.data(pie(DATA))
     g.transition().duration(700)
             .attr("d", arc)
