@@ -56,6 +56,7 @@ NuclearToggle.prototype.getElectricityGenerated = function() {
 ResourceSlider.prototype.setValue = function(x) {
     this.value = x
     findByKey(DATA,this.id).value = this.value;
+    findByKey(DATA,this.id).electricity = this.getElectricityGenerated();
     }
 ResourceSlider.prototype.getElectricityGenerated = function() {
     return (8760*this.value*this.capacityFactor)/1000;
@@ -64,6 +65,7 @@ ResourceSlider.prototype.getElectricityGenerated = function() {
 ResourceConstant.prototype.getElectricityGenerated = function() {
     return (8760*this.value*this.capacityFactor)/1000;
 }
+
 var nucToggles = {
     "chinsan1": new NuclearToggle(true,"chinsan1",636),
     "chinsan2": new NuclearToggle(true,"chinsan2",636),
@@ -91,8 +93,8 @@ var constants = {
 for(var item in nucToggles){
     DATA.push({
         "name" : nucToggles[item].id,
-        "value": 0,
-        "electricity": 0,
+        "value": nucToggles[item].position == true ? nucToggles[item].value : 0,
+        "electricity": nucToggles[item].position == true ? nucToggles[item].getElectricityGenerated() : 0,
         "type": nucToggles[item].type
     });
 }
@@ -204,26 +206,18 @@ $(document).ready(function(){
         if(id == default_id){
             default_value= item[mode]+" ("+truncateDecimals(item[mode]*100/COMP_sum(mode),2)+"%)"
             $("#detail-name").text(item.name.toUpperCase());
-            $("#detail-value").text(function(){
-                return default_value
-            });
+            $("#detail-value").text(default_value);
         }
         updateVisualization();
     })
-    function COMP_sum(MODE){
-        if(MODE == "electricity"){
-            return COMP_electricityGenerated();
-        }
-        else{
-            return COMP_totalInstalledCapacity();
-        }
-    }
+
     $("input[type=range]").mousedown(function() {
         $("input[type=range]").mousemove(function(){
             var id = $(this).attr("id");
             var val = document.getElementById(id).value
             resourceSliders[id].setValue(+val);
             $(this).next().text(val+" MW");
+            /*
             if(id == default_id)
             {
                 var item = findByKey(DATA,id)
@@ -234,14 +228,15 @@ $(document).ready(function(){
                     return item[mode]+" ("+truncateDecimals(item[mode]*100/COMP_totalInstalledCapacity(),2)+"%)"
                 });
             }
+            */
             $("#CEC").text(Math.round(COMP_cecCoal()+COMP_cecNaturalGas()));
             COMP();
             updateVisualization();
         })
     })
     $("input[type=range]").mouseup(updateVisualization)
-    $("#submit").click(COMP);
     $("#CEC").text(Math.round(COMP_cecCoal()+COMP_cecNaturalGas()));
+
     function COMP(){
         $("#TIC").text(Math.round(COMP_totalInstalledCapacity())+" MW");
         $("#RC").text(truncateDecimals(COMP_reserveCapacity()*100,2)+"%");
@@ -279,7 +274,7 @@ $(document).ready(function(){
 
 
 
-var width = 300,
+    var width = 300,
     height = 300,
     radius = Math.min(width, height) / 2;
 
@@ -355,25 +350,25 @@ var width = 300,
             default_value = d.data[mode]+" ("+truncateDecimals(d.data[mode]*100/COMP_totalInstalledCapacity(),2)+"%)"
         })
 
-        g_elec
-            .on("mouseover", function(d){
-                d3.select(this).transition().duration(300).attr('opacity',0.5);
-                $("#detail-name").text(d.data.name.toUpperCase());
-                $("#detail-value").text(function(){
-                    if(mode=="value"){ return d.data[mode]+" ("+truncateDecimals(d.data[mode]*100/COMP_totalInstalledCapacity(),2)+"%)" }
-                    else{ return d.data[mode]+" ("+truncateDecimals(d.data[mode]*100/COMP_electricityGenerated(),2)+"%)" }
-                });
-                $(".detail-label").css("border-left-color",color(d.data.type))
-            })
-            .on("mouseout", function(d){
-                d3.select(this).transition().duration(300).attr('opacity',1);
-                $("#detail-name").text(default_id.toUpperCase());
-                $("#detail-value").text(default_value);
-            })
-            .on("click", function(d){
-                default_id= d.data.name;
-                default_value = d.data[mode]+" ("+truncateDecimals(d.data[mode]*100/COMP_totalInstalledCapacity(),2)+"%)"
-            })
+    g_elec
+        .on("mouseover", function(d){
+            d3.select(this).transition().duration(200).attr('opacity',0.5);
+            $("#detail-name").text(d.data.name.toUpperCase());
+            $("#detail-value").text(function(){
+                if(mode=="value"){ return d.data[mode]+" ("+truncateDecimals(d.data[mode]*100/COMP_totalInstalledCapacity(),2)+"%)" }
+                else{ return d.data[mode]+" ("+truncateDecimals(d.data[mode]*100/COMP_electricityGenerated(),2)+"%)" }
+            });
+            $(".detail-label").css("border-left-color",color(d.data.type))
+        })
+        .on("mouseout", function(d){
+            d3.select(this).transition().duration(200).attr('opacity',1);
+            $("#detail-name").text(default_id.toUpperCase());
+            $("#detail-value").text(default_value);
+        })
+        .on("click", function(d){
+            default_id= d.data.name;
+            default_value = d.data[mode]+" ("+truncateDecimals(d.data[mode]*100/COMP_totalInstalledCapacity(),2)+"%)"
+        })
     function toggle(){
 
         if(mode == "value")
@@ -387,12 +382,12 @@ var width = 300,
 function updateVisualization(){
     pie.value(function(d) { return d.value})
     g.data(pie(DATA))
-    g.transition().duration(700)
+    g.transition().duration(500)
             .attr("d", arc)
 
     pie_elec.value(function(d) { return d.electricity})
-    g.data(pie(DATA))
-    g.transition().duration(700)
+    g_elec.data(pie_elec(DATA))
+    g_elec.transition().duration(500)
             .attr("d", arc)
 }
 
