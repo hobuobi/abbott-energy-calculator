@@ -33,8 +33,8 @@ var demand = 42423;
 //NuclearToggle.prototype.getValue = function() { return this.value; }
 
 //Nuclear Toggle Methods
-NuclearToggle.prototype.toggle = function() { 
-    if(this.position == true){ 
+NuclearToggle.prototype.toggle = function() {
+    if(this.position == true){
         this.position = false
         findByKey(DATA,this.id).value = 0;
         findByKey(DATA,this.id).electricity = 0;
@@ -53,8 +53,8 @@ NuclearToggle.prototype.getElectricityGenerated = function() {
 }
 
 //Resource Sliders Methods
-ResourceSlider.prototype.setValue = function(x) { 
-    this.value = x 
+ResourceSlider.prototype.setValue = function(x) {
+    this.value = x
     findByKey(DATA,this.id).value = this.value;
     }
 ResourceSlider.prototype.getElectricityGenerated = function() {
@@ -65,22 +65,22 @@ ResourceConstant.prototype.getElectricityGenerated = function() {
     return (8760*this.value*this.capacityFactor)/1000;
 }
 var nucToggles = {
-    "chinsan1": new NuclearToggle(false,"chinsan1",636),
-    "chinsan2": new NuclearToggle(false,"chinsan2",636),
-    "kuosheng1": new NuclearToggle(false,"kuosheng1",985),
-    "kuosheng2": new NuclearToggle(false,"kuosheng2",985),
-    "maanshan1": new NuclearToggle(false,"maanshan1",951),
-    "maanshan2": new NuclearToggle(false,"maanshan2",951),
-    "lungmen1": new NuclearToggle(false,"lungmen1",1350),
-    "lungmen2": new NuclearToggle(false,"lungmen2",1350)
+    "chinsan1": new NuclearToggle(true,"chinsan1",636),
+    "chinsan2": new NuclearToggle(true,"chinsan2",636),
+    "kuosheng1": new NuclearToggle(true,"kuosheng1",985),
+    "kuosheng2": new NuclearToggle(true,"kuosheng2",985),
+    "maanshan1": new NuclearToggle(true,"maanshan1",951),
+    "maanshan2": new NuclearToggle(true,"maanshan2",951),
+    "lungmen1": new NuclearToggle(true,"lungmen1",1350),
+    "lungmen2": new NuclearToggle(true,"lungmen2",1350)
 
 }
 var resourceSliders = {
-    "solarpv": new ResourceSlider(669,20000,"solarpv", 10000,["LC","R"],.13),
-    "wind": new ResourceSlider(652, 4000, "wind", 2500,["LC","R"],.3), 
-    "coal": new ResourceSlider(0,15297,"coal", 10000,["FF"],.84),
-    "oil": new ResourceSlider(0, 3325, "oil", 1675,["FF"],.21), 
-    "gas": new ResourceSlider(0,26090, "gas", 13045,["FF"],.52)
+    "solarpv": new ResourceSlider(669,20000,"solarpv", 669,["LC","R"],.13),
+    "wind": new ResourceSlider(652, 4000, "wind", 652,["LC","R"],.3),
+    "coal": new ResourceSlider(0,15297,"coal", 10697,["FF"],.84),
+    "oil": new ResourceSlider(0, 3325, "oil", 3325,["FF"],.21),
+    "gas": new ResourceSlider(0,26090, "gas", 15244,["FF"],.52)
 }
 var constants = {
     "biogas": new ResourceConstant("biogas", 623,.65,["R"]),
@@ -117,31 +117,30 @@ function COMP_totalInstalledCapacity(){
     for(var item in nucToggles)
     {
         var tempItem = nucToggles[item]
-        if(tempItem.position == true){ 
-            TOTAL+=tempItem.value; 
+        if(tempItem.position == true){
+            TOTAL+=tempItem.value;
         }
-        
     }
     for(var item in resourceSliders)
     {
         var tempItem = resourceSliders[item];
-        TOTAL+=tempItem.value; 
-        
+        TOTAL+=tempItem.value;
+
     }
     for(var item in constants)
     {
         var tempItem = constants[item];
-        TOTAL+=tempItem.value; 
-        
+        TOTAL+=tempItem.value;
     }
 
     return TOTAL;
 }
 
 function COMP_reserveCapacity(){
-    var SUPPLY = COMP_totalInstalledCapacity();
+
+    var SUPPLY = COMP_totalInstalledCapacity()-resourceSliders["solarpv"].value-resourceSliders["wind"].value;
     var DEMAND = demand;
-    
+
     return (SUPPLY-DEMAND)/DEMAND;
 }
 
@@ -168,21 +167,21 @@ function COMP_electricityGenerated(){
     var TOTAL = 0;
     for(var item in nucToggles){
         var tempItem = nucToggles[item]
-        if(tempItem.position == true){ 
+        if(tempItem.position == true){
             TOTAL += tempItem.getElectricityGenerated();
-        }  
+        }
     }
     for(var item in resourceSliders){
         var tempItem = resourceSliders[item]
         TOTAL+= tempItem.getElectricityGenerated();
-    }   
+    }
     for(var item in constants){
         var tempItem = constants[item]
-        TOTAL+= tempItem.getElectricityGenerated(); 
+        TOTAL+= tempItem.getElectricityGenerated();
     }
 
     return TOTAL;
-    
+
 }
 
 function COMP_cecCoal(){ return (resourceSliders["coal"].getElectricityGenerated()-78713540)*.0008 }
@@ -192,6 +191,7 @@ $(document).ready(function(){
     var default_id = "____";
     var default_value = "____";
     applyToSliders(resourceSliders);
+    applyToToggles(nucToggles);
     $("select").change(function(){
         demand = +($(this).val());
         COMP();
@@ -237,7 +237,7 @@ $(document).ready(function(){
             $("#CEC").text(Math.round(COMP_cecCoal()+COMP_cecNaturalGas()));
             COMP();
             updateVisualization();
-        })  
+        })
     })
     $("input[type=range]").mouseup(updateVisualization)
     $("#submit").click(COMP);
@@ -246,18 +246,26 @@ $(document).ready(function(){
         $("#TIC").text(Math.round(COMP_totalInstalledCapacity())+" MW");
         $("#RC").text(truncateDecimals(COMP_reserveCapacity()*100,2)+"%");
         $("#EG").text(Math.round(COMP_electricityGenerated())+" MW");
-        
+
     }
-    
+
     function applyToSliders(sliderObj){
         for(var key in sliderObj){
             $("#"+key).attr("min", sliderObj[key].min);
             $("#"+key).attr("max", sliderObj[key].max);
+            document.getElementById(key).defaultValue = sliderObj[key].value;
             $("#"+key).attr("val", sliderObj[key].value);
             $("#"+key).next().text(sliderObj[key].value+" MW")
-            COMP(); 
+            COMP();
         }
     }
+    function applyToToggles(toggleObj){
+      for(var key in toggleObj){
+        $("#"+key).prop("checked",toggleObj[key].position);
+        findByKey(DATA,key).value = nucToggles[key].position == true ? nucToggles[key].value : 0;
+        }
+      }
+    
     $(".data-switch").change(function(){
         toggle();
         if($(this).prop("checked") == true){
@@ -268,18 +276,18 @@ $(document).ready(function(){
         }
         updateVisualization();
     })
-    
+
 
 
 var width = 500,
     height = 400,
     radius = Math.min(width, height) / 2;
 
-       
+
     var color = d3.scale.ordinal(["#CCC","royalblue","green","teal"])
         .range(["#555","royalblue","green","teal"])
         .domain([["FF"],["LC"],["R"],["LC","R"]])
-        
+
     var arc = d3.svg.arc()
         .outerRadius(radius - 10)
         .innerRadius(radius/2);
@@ -295,8 +303,8 @@ var width = 500,
         .attr("height", height)
     .append("g")
         .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
-        
-    
+
+
     console.log("UPDATING");
     var g = svg.selectAll(".arc")
         .data(pie(DATA))
@@ -304,9 +312,7 @@ var width = 500,
 
     g.enter().append("path")
         .attr("d", arc)
-        .style("fill", function(d) { 
-            console.log(d.data.type)
-            console.log(color(d.data.type))
+        .style("fill", function(d) {
             return color(d.data.type); })
         .style("stroke", "white");
     function total(){
@@ -333,13 +339,13 @@ var width = 500,
             default_id= d.data.name;
             default_value = d.data[mode]+" ("+truncateDecimals(d.data[mode]*100/COMP_totalInstalledCapacity(),2)+"%)"
         })
-    
+
     if($("#detail-name").text() != "SELECT A SEGMENT")
     {
-        
+
     }
     function toggle(){
-        
+
         if(mode == "value")
         {
             mode = "electricity"
@@ -349,10 +355,10 @@ var width = 500,
         }
     }
 function updateVisualization(){
-    pie.value(function(d) { console.log(d[mode]); return d[mode]})
+    pie.value(function(d) { return d[mode]})
     g.data(pie(DATA))
     g.transition().duration(700)
-            .attr("d", arc)      
+            .attr("d", arc)
 }
-   
+
  });

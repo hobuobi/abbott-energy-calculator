@@ -93,15 +93,15 @@ select{
   padding: 20px;
   margin: 5px;
   border-radius: 32px;
-  font-family: "Montserrat";
+  font-family: "Montserrat", sans-serif;
   font-size: 1.25em;
   color: #333;
   text-align: center;
-  
+
   background-color: #ccc;
-  
+
   cursor: pointer;
-  
+
   transition: 0.4s;
   -webkit-transition: 0.4s
 }
@@ -112,19 +112,19 @@ select{
 
 input:checked + div.toggle{
     color: white;
-    background-color: green; 
+    background-color: green;
     box-shadow: 7px 7px 7px #333;
 }
 
 #data-capacity{
     float: left;
     color:grey;
-    
+
 }
 #data-elec{
     float: right;
     color:grey;
-    
+
 }
 input[type=range]{
     vertical-align: top;
@@ -140,7 +140,7 @@ input[type=range]::-webkit-slider-runnable-track{
 }
 input[type=range]::-webkit-slider-thumb {
     -webkit-appearance: none;
-    border: none;   
+    border: none;
     background: black;
     height: 100%;
 }
@@ -168,27 +168,27 @@ input[type=range]::-webkit-slider-thumb {
     padding: 20px;
 
     background-color: green;
-    
+
     font-family: "Roboto", sans-serif;
     font-weight: 700;
     font-size: 1.7em;
     color: white;
     text-align: right;
-    
+
     transition: 0.4s;
     -webkit-transition: 0.4s;
-    
+
     cursor: pointer;
-    
+
 }
 #submit:hover{
     background-color: teal;
 }
 
 .arc {
-    stroke: #fff; 
+    stroke: #fff;
     stroke-width: 3px;
-    
+
 }
 path{
     cursor: pointer;
@@ -199,9 +199,9 @@ path{
     margin: auto;
     margin-top: 20px;
     padding: 10px;
-    border-left: 10px royalblue solid; 
+    border-left: 10px royalblue solid;
     height: 50px;
-    
+
 }
 
 #detail-name{
