@@ -70,7 +70,7 @@ select{
     display:inline-block;
     margin: 0px;
     padding: 0px;
-    width: 50%
+    max-width: 50%
 }
 .slide-value {
     vertical-align: top;
@@ -202,19 +202,7 @@ path{
 
 }
 
-#detail-name{
-    font-family: "Roboto", sans-serif;
-    font-weight: 700;
-    font-size: 1.7em;
-    float: left;
-}
-#detail-value{
-    float: right;
-    font-family: "Roboto", sans-serif;
-    font-weight: 300;
-    font-style: italic;
-    font-size: 1.3em;
-}
+
 
 .header-label{
   text-align: center;

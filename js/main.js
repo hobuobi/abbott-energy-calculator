@@ -137,7 +137,30 @@ function COMP_totalInstalledCapacity(){
 
     return TOTAL;
 }
+function COMP_totalInstalledCapacityType(x){
+    var TOTAL = 0;
+    for(var item in nucToggles){
+        var tempItem = nucToggles[item]
+        if(tempItem.position == true && arrContains(tempItem.type,x)){
+            TOTAL += tempItem.value;
+        }
+    }
+    for(var item in resourceSliders){
+        var tempItem = resourceSliders[item]
+        if(arrContains(tempItem.type,x)){
+            TOTAL += tempItem.value;
+        }
+    }
+    for(var item in constants){
+        var tempItem = constants[item]
+        if(arrContains(tempItem.type,x)){
+            TOTAL += tempItem.value;
+        }
+    }
 
+    return TOTAL;
+
+}
 function COMP_reserveCapacity(){
 
     var SUPPLY = COMP_totalInstalledCapacity()-resourceSliders["solarpv"].value-resourceSliders["wind"].value;
@@ -164,6 +187,9 @@ function findByKey(array,key){
     }
     return null;
 }
+function arrContains(array,value){
+    return array.indexOf(value) != -1 ? true : false;
+}
 
 function COMP_electricityGenerated(){
     var TOTAL = 0;
@@ -185,6 +211,30 @@ function COMP_electricityGenerated(){
     return TOTAL;
 
 }
+function COMP_electricityGeneratedType(x){
+    var TOTAL = 0;
+    for(var item in nucToggles){
+        var tempItem = nucToggles[item]
+        if(tempItem.position == true && arrContains(tempItem.type,x)){
+            TOTAL += tempItem.getElectricityGenerated();
+        }
+    }
+    for(var item in resourceSliders){
+        var tempItem = resourceSliders[item]
+        if(arrContains(tempItem.type,x)){
+            TOTAL += tempItem.getElectricityGenerated();
+        }
+    }
+    for(var item in constants){
+        var tempItem = constants[item]
+        if(arrContains(tempItem.type,x)){
+            TOTAL += tempItem.getElectricityGenerated();
+        }
+    }
+
+    return TOTAL;
+
+}
 
 function COMP_cecCoal(){ return (resourceSliders["coal"].getElectricityGenerated()-78713540)*.0008 }
 function COMP_cecNaturalGas(){ return (resourceSliders["gas"].getElectricityGenerated()-70779352)*.0003 }
@@ -192,6 +242,8 @@ function COMP_cecNaturalGas(){ return (resourceSliders["gas"].getElectricityGene
 $(document).ready(function(){
     var default_id = "____";
     var default_value = "____";
+    var default_id_2 = "____";
+    var default_value_2 = "____";
     applyToSliders(resourceSliders);
     applyToToggles(nucToggles);
     $("select").change(function(){
@@ -217,18 +269,23 @@ $(document).ready(function(){
             var val = document.getElementById(id).value
             resourceSliders[id].setValue(+val);
             $(this).next().text(val+" MW");
-            /*
+
             if(id == default_id)
             {
                 var item = findByKey(DATA,id)
-                if(mode == "value"){ default_value = item[mode]+" ("+truncateDecimals(item[mode]*100/COMP_totalInstalledCapacity(),2)+"%)"; }
-                else{ default_value = item[mode]+" ("+truncateDecimals(item[mode]*100/COMP_electricityGenerated(),2)+"%)";}
+                default_value = item[mode]+" ("+truncateDecimals(item[mode]*100/COMP_totalInstalledCapacity(),2)+"%)";
                 $("#detail-name").text(item.name.toUpperCase());
                 $("#detail-value").text(function(){
-                    return item[mode]+" ("+truncateDecimals(item[mode]*100/COMP_totalInstalledCapacity(),2)+"%)"
+                    return item.value+" ("+truncateDecimals(item.value*100/COMP_totalInstalledCapacity(),2)+"%)"
                 });
             }
-            */
+            if(id == default_id_2)
+            {
+                var item = findByKey(DATA,id)
+                default_value_2 = truncateDecimals(item.electricity,0)+" ("+truncateDecimals(item.electricity*100/COMP_electricityGenerated(),2)+"%)";
+                $("#detail-name-elec").text(item.name.toUpperCase());
+                $("#detail-elec").text(default_value_2);
+            }
             $("#CEC").text(Math.round(COMP_cecCoal()+COMP_cecNaturalGas()));
             COMP();
             updateVisualization();
@@ -240,8 +297,22 @@ $(document).ready(function(){
     function COMP(){
         $("#TIC").text(Math.round(COMP_totalInstalledCapacity())+" MW");
         $("#RC").text(truncateDecimals(COMP_reserveCapacity()*100,2)+"%");
-        $("#EG").text(Math.round(COMP_electricityGenerated())+" MW");
-
+        $("#RNC").text(truncateDecimals(COMP_totalInstalledCapacityType("R")/COMP_totalInstalledCapacity()*100,2)+"%");
+        $("#NRNC").text(truncateDecimals((1-COMP_totalInstalledCapacityType("R")/COMP_totalInstalledCapacity())*100,2)+"%");
+        $("#RNE").text(truncateDecimals(COMP_electricityGeneratedType("R")/COMP_electricityGenerated()*100,2)+"%");
+        $("#NRNE").text(truncateDecimals((1-COMP_electricityGeneratedType("R")/COMP_electricityGenerated())*100,2)+"%");
+        $("#EG").text(Math.round(COMP_electricityGenerated())+" GWH");
+        $("#CEC").text(Math.round(COMP_cecCoal()+COMP_cecNaturalGas()));
+        $("#goalsMet").text(function(){
+          if(COMP_cecCoal()+COMP_cecNaturalGas() < 38082)
+          {
+            $(this).attr("color","green"); return "YES";
+          }
+          else
+          {
+            $(this).attr("color","red"); return "NO";
+          }
+        });
     }
 
     function applyToSliders(sliderObj){
@@ -260,20 +331,6 @@ $(document).ready(function(){
         findByKey(DATA,key).value = nucToggles[key].position == true ? nucToggles[key].value : 0;
         }
       }
-
-    $(".data-switch").change(function(){
-        toggle();
-        if($(this).prop("checked") == true){
-            $("#mode").text("TOTAL INSTALLED CAPACITY")
-        }
-        else{
-            $("#mode").text("ELECTRICITY GENERATED")
-        }
-        updateVisualization();
-    })
-
-
-
     var width = 300,
     height = 300,
     radius = Math.min(width, height) / 2;
@@ -314,7 +371,22 @@ $(document).ready(function(){
     var g_elec = svg_elec.selectAll(".arc")
         .data(pie_elec(DATA))
         .attr("class","arc");
-
+    var label = svg.append("text")
+      .attr("id","detail-value")
+      .attr("text-anchor","middle")
+      .attr("y",17);
+    var labelname = svg.append("text")
+      .attr("id","detail-name")
+      .attr("text-anchor","middle")
+      .attr("y",0);
+    var label_elec = svg_elec.append("text")
+      .attr("id","detail-elec")
+      .attr("text-anchor","middle")
+      .attr("y",17);
+    var labelnameelec = svg_elec.append("text")
+      .attr("id","detail-name-elec")
+      .attr("text-anchor","middle")
+      .attr("y",0);
     g.enter().append("path")
         .attr("d", arc)
         .style("fill", function(d) {
@@ -334,10 +406,7 @@ $(document).ready(function(){
         .on("mouseover", function(d){
             d3.select(this).transition().duration(300).attr('opacity',0.5);
             $("#detail-name").text(d.data.name.toUpperCase());
-            $("#detail-value").text(function(){
-                if(mode=="value"){ return d.data[mode]+" ("+truncateDecimals(d.data[mode]*100/COMP_totalInstalledCapacity(),2)+"%)" }
-                else{ return d.data[mode]+" ("+truncateDecimals(d.data[mode]*100/COMP_electricityGenerated(),2)+"%)" }
-            });
+            $("#detail-value").text((d.data).value+" ("+truncateDecimals(d.data.value*100/COMP_totalInstalledCapacity(),2)+"%)");
             $(".detail-label").css("border-left-color",color(d.data.type))
         })
         .on("mouseout", function(d){
@@ -353,21 +422,20 @@ $(document).ready(function(){
     g_elec
         .on("mouseover", function(d){
             d3.select(this).transition().duration(200).attr('opacity',0.5);
-            $("#detail-name").text(d.data.name.toUpperCase());
-            $("#detail-value").text(function(){
-                if(mode=="value"){ return d.data[mode]+" ("+truncateDecimals(d.data[mode]*100/COMP_totalInstalledCapacity(),2)+"%)" }
-                else{ return d.data[mode]+" ("+truncateDecimals(d.data[mode]*100/COMP_electricityGenerated(),2)+"%)" }
+            $("#detail-name-elec").text(d.data.name.toUpperCase());
+            $("#detail-elec").text(function(){
+                return truncateDecimals(d.data.electricity,0)+" ("+truncateDecimals(d.data.electricity*100/COMP_electricityGenerated(),2)+"%)"
             });
             $(".detail-label").css("border-left-color",color(d.data.type))
         })
         .on("mouseout", function(d){
             d3.select(this).transition().duration(200).attr('opacity',1);
-            $("#detail-name").text(default_id.toUpperCase());
-            $("#detail-value").text(default_value);
+            $("#detail-name-elec").text(default_id_2.toUpperCase());
+            $("#detail-elec").text(default_value_2);
         })
         .on("click", function(d){
-            default_id= d.data.name;
-            default_value = d.data[mode]+" ("+truncateDecimals(d.data[mode]*100/COMP_totalInstalledCapacity(),2)+"%)"
+            default_id_2= d.data.name;
+            default_value_2 = truncateDecimals(d.data.electricity,0)+" ("+truncateDecimals(d.data.electricity*100/COMP_electricityGenerated(),2)+"%)"
         })
     function toggle(){
 
