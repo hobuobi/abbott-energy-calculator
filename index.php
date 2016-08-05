@@ -1,7 +1,7 @@
 <DOCTYPE! html>
 
 <html>
-    <title>CALCULATOR TEST</title>
+    <title>Abbott -- Energy Explorer</title>
     <head>
         <!-- CSS -->
 
@@ -76,30 +76,30 @@
         <div class="slide-holder">
             <div class="slide-title">COAL</div>
            <input type="range" id="coal">
-            <div class="slide-value">VALUE</div>
+            <input type="text" class="slide-value" id="coal"></input>
         </div>
 
         <div class="slide-holder">
             <div class="slide-title">OIL</div>
             <input type="range" id="oil">
-            <div class="slide-value">VALUE</div>
+            <input type="text" class="slide-value" id="oil"></input>
         </div>
 
         <div class="slide-holder">
             <div class="slide-title">NATURAL GAS</div>
             <input type="range" id="gas">
-            <div class="slide-value">VALUE</div>
+            <input type="text" class="slide-value" id="gas"></input>
         </div>
 
         <div class="slide-holder">
             <div class="slide-title">SOLAR</div>
             <input type="range" id="solarpv">
-            <div class="slide-value">VALUE</div>
+            <input type="text" class="slide-value" id="solarpv"></input>
         </div>
         <div class="slide-holder">
             <div class="slide-title">WIND</div>
             <input type="range" id="wind">
-            <div class="slide-value">VALUE</div>
+            <input type="text" class="slide-value" id="wind"></input>
         </div>
 
 

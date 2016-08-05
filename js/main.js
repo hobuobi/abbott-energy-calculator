@@ -190,6 +190,15 @@ function findByKey(array,key){
 function arrContains(array,value){
     return array.indexOf(value) != -1 ? true : false;
 }
+function getNumber(str){
+    var result = "";
+    for(var i=0; i<str.length; i++){
+      if(str[i] >= 48 || str[i] <= 57){
+        result = result.concat(str[i]);
+      }
+    }
+    return +result;
+}
 
 function COMP_electricityGenerated(){
     var TOTAL = 0;
@@ -268,7 +277,7 @@ $(document).ready(function(){
             var id = $(this).attr("id");
             var val = document.getElementById(id).value
             resourceSliders[id].setValue(+val);
-            $(this).next().text(val+" MW");
+            $(this).next().val(val+" MW");
 
             if(id == default_id)
             {
@@ -290,6 +299,47 @@ $(document).ready(function(){
             COMP();
             updateVisualization();
         })
+    })
+    //$("input[type=text]").
+    $("input[type=text]").focus(function(){
+      var defaultValue = $(this).val();
+      $(this).keypress(function(e){
+        if(e.which == 13)
+        {
+          var id = $(this).attr("id");
+          console.log(id);
+          var val = getNumber($(this).val());
+          if(val != 0 && val >= resourceSliders[id].min && val <= resourceSliders[id].max){
+            $(this).val(val+" MW")
+            resourceSliders[id].setValue(val);
+            $(this).prev().val(val);
+
+            if(id == default_id)
+            {
+                var item = findByKey(DATA,id)
+                default_value = item[mode]+" ("+truncateDecimals(item[mode]*100/COMP_totalInstalledCapacity(),2)+"%)";
+                $("#detail-name").text(item.name.toUpperCase());
+                $("#detail-value").text(function(){
+                    return item.value+" ("+truncateDecimals(item.value*100/COMP_totalInstalledCapacity(),2)+"%)"
+                });
+            }
+            if(id == default_id_2)
+            {
+                var item = findByKey(DATA,id)
+                default_value_2 = truncateDecimals(item.electricity,0)+" ("+truncateDecimals(item.electricity*100/COMP_electricityGenerated(),2)+"%)";
+                $("#detail-name-elec").text(item.name.toUpperCase());
+                $("#detail-elec").text(default_value_2);
+            }
+            $("#CEC").text(Math.round(COMP_cecCoal()+COMP_cecNaturalGas()));
+            COMP();
+            updateVisualization();
+          }
+          else{ $(this).val(defaultValue)}
+
+
+        }
+
+      })
     })
     $("input[type=range]").mouseup(updateVisualization)
     $("#CEC").text(Math.round(COMP_cecCoal()+COMP_cecNaturalGas()));
@@ -321,7 +371,7 @@ $(document).ready(function(){
             $("#"+key).attr("max", sliderObj[key].max);
             document.getElementById(key).defaultValue = sliderObj[key].value;
             $("#"+key).attr("val", sliderObj[key].value);
-            $("#"+key).next().text(sliderObj[key].value+" MW")
+            $("#"+key).next().val(sliderObj[key].value+" MW")
             COMP();
         }
     }
