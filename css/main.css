@@ -243,3 +243,21 @@ path{
 .data-table td:nth-child(2){
   font-weight: 700;
 }
+
+.alert {
+  position: fixed;
+  bottom: 0px;
+  margin: auto;
+  padding: 15px;
+  cursor: pointer;
+  background-color: white;
+  box-shadow: 3px 3px 3px #333;
+  font-size: 1.4em;
+  font-style: italic;
+  color: #333;
+  border-left: 4px solid red;
+  z-index: 10000;
+}
+.alert:hover{
+  background-color: #EEE;
+}

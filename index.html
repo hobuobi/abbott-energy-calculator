@@ -21,12 +21,15 @@
         <div style="position:relative;margin:0px;width:100%">
         <h2>SELECT DEMAND</h2>
         <select style="position:absolute; top:0px; right:0px">
-            <option value="42423">Taipower - 42423 MW</option>
+            <option value="42423">Taipower projection (approx. 2% growth/yr)
+ - 42423 MW</option>
             <option value="35707">Net Zero (2015 Levels) - 35707 MW</option>
             <option value="32950">1% YR Reduction - 32950 MW</option>
             <option value="30380">2% YR Reduction - 30380 MW</option>
         </select>
         </div>
+        <br>
+        <p><i>Select a rate of energy demand growth for the year 2025.</i></p>
         <hr />
         <h2>SELECT POWER PLANTS</h2>
         <hr />
@@ -73,6 +76,7 @@
         <h2>SELECT RESOURCE VALUES</h2>
         <p><i>All values are in megawatts.</i></p>
         <hr />
+        <h4><i>Fossil Fuels</i></h4>
         <div class="slide-holder">
             <div class="slide-title">COAL</div>
            <input type="range" id="coal">
@@ -90,7 +94,7 @@
             <input type="range" id="gas">
             <input type="text" class="slide-value" id="gas"></input>
         </div>
-
+        <h4><i>Renewables</i></h4>
         <div class="slide-holder">
             <div class="slide-title">SOLAR</div>
             <input type="range" id="solarpv">

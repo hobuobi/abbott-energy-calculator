@@ -255,6 +255,16 @@ $(document).ready(function(){
     var default_value_2 = "____";
     applyToSliders(resourceSliders);
     applyToToggles(nucToggles);
+    function alert(id){
+      if(!$(".alert").length){
+        $("body").append("<div class='alert'>Please enter a value between "+resourceSliders[id].min+" and "+resourceSliders[id].max+".</div>");
+        $(".alert").click(function(){
+          console.log('clickity');$(this).remove();
+        });
+      }
+      else{ $(".alert").text("Please enter a value between "+resourceSliders[id].min+" and "+resourceSliders[id].max+".")}
+    }
+
     $("select").change(function(){
         demand = +($(this).val());
         COMP();
@@ -300,7 +310,6 @@ $(document).ready(function(){
             updateVisualization();
         })
     })
-    //$("input[type=text]").
     $("input[type=text]").focus(function(){
       var defaultValue = $(this).val();
       $(this).keypress(function(e){
@@ -334,9 +343,7 @@ $(document).ready(function(){
             COMP();
             updateVisualization();
           }
-          else{ $(this).val(defaultValue)}
-
-
+          else{ alert(id); $(this).val(defaultValue)}
         }
 
       })
