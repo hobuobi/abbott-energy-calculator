@@ -15,9 +15,11 @@ p {
     font-weight: 300;
 }
 select{
-    float: right;
     font-size: 1.3em;
     padding: 10px;
+}
+#demand{
+  float:right;
 }
 #header{
     height: 50px;
@@ -85,6 +87,9 @@ select{
     width:25%;
     text-align: right;
     border: none;
+}
+.slide-value:hover{
+  opacity: 0.4;
 }
 .toggle div{
   position: relative;
@@ -208,13 +213,16 @@ path{
 
 
 
-.header-label{
+.header-label > select{
+  display: inline-block;
+  position: relative;
+  margin: 20px;
+}
+.header-label p {
   text-align: center;
   color: green;
   font-weight: 700;
   font-size: 1.3em;
-}
-.header-label p {
   margin: 0;
 }
 

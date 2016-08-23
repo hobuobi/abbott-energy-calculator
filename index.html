@@ -20,12 +20,12 @@
     <div class="col-md-6" id="container-I">
         <div style="position:relative;margin:0px;width:100%">
         <h2>SELECT DEMAND</h2>
-        <select style="position:absolute; top:0px; right:0px">
+        <select id="demand" style="position:absolute; top:0px; right:0px">
             <option value="42423">Taipower projection (approx. 2% growth/yr)
  - 42423 MW</option>
-            <option value="35707">Net Zero (2015 Levels) - 35707 MW</option>
-            <option value="32950">1% YR Reduction - 32950 MW</option>
-            <option value="30380">2% YR Reduction - 30380 MW</option>
+            <option value="35707">No change in demand- 35707 MW</option>
+            <option value="32950">1% Annual Reduction - 32950 MW</option>
+            <option value="30380">2% Annual Reduction - 30380 MW</option>
         </select>
         </div>
         <br>
@@ -110,6 +110,22 @@
 
     </div>
     <div class="col-md-6" id="container-O">
+      <!--
+      <select id="situation" style="position:absolute; top:0px; right:0px">
+          <option value="2015">2015 Energy Situation</option>
+          <option value="taipower">2025 Energy Situation (Taipower Prediction)</option>
+          <option value="renewables">2025 Energy Situation (Max Renewables)</option>
+          <option value="custom">2025 Energy Situation (Custom Input)</option>
+      </select> -->
+        <div class="header-label" align="center">
+          <p>Select an energy scenario.</p>
+          <select id="scenarios">
+              <option value="2015">2015 Energy Situation</option>
+              <option value="taipower">2025 Energy Prediction (TAIPOWER)</option>
+              <option value="max-ren">2025 Energy Prediction (MAX RENEWABLES)</option>
+              <option value="custom">2025, Custom Input</option>
+          </select>
+        </div>
         <div class="header-label">
           <p><span>TOTAL INSTALLED CAPACITY</span></p>
           <p><span id="TIC"></span></p>

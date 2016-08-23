@@ -265,10 +265,13 @@ $(document).ready(function(){
       else{ $(".alert").text("Please enter a value between "+resourceSliders[id].min+" and "+resourceSliders[id].max+".")}
     }
 
-    $("select").change(function(){
+    $("#demand").change(function(){
         demand = +($(this).val());
         COMP();
     })
+    $("#situation").change(function(){
+
+    });
     $("input.pplant:checkbox").change(function() {
         var id = $(this).attr("id");
         nucToggles[id].toggle();
@@ -316,7 +319,6 @@ $(document).ready(function(){
         if(e.which == 13)
         {
           var id = $(this).attr("id");
-          console.log(id);
           var val = getNumber($(this).val());
           if(val != 0 && val >= resourceSliders[id].min && val <= resourceSliders[id].max){
             $(this).val(val+" MW")
@@ -328,9 +330,7 @@ $(document).ready(function(){
                 var item = findByKey(DATA,id)
                 default_value = item[mode]+" ("+truncateDecimals(item[mode]*100/COMP_totalInstalledCapacity(),2)+"%)";
                 $("#detail-name").text(item.name.toUpperCase());
-                $("#detail-value").text(function(){
-                    return item.value+" ("+truncateDecimals(item.value*100/COMP_totalInstalledCapacity(),2)+"%)"
-                });
+                $("#detail-value").text(default_value);
             }
             if(id == default_id_2)
             {
@@ -350,9 +350,40 @@ $(document).ready(function(){
     })
     $("input[type=range]").mouseup(updateVisualization)
     $("#CEC").text(Math.round(COMP_cecCoal()+COMP_cecNaturalGas()));
-
+    $("#scenarios").change(function(){
+      switch($(this).val()){
+        case '2015': applyScenario("41.0 GW","11.3%","8.2%","91.8%","6.2%","93.8","219013.9 GWH","-0.029","NO",false);
+        break;
+        case 'taipower': applyScenario("46.6 GW","3.6%","10.3%","89.7%","4.0%","96.0%","225668.0 GWH","36249 kT CO2","NO",false);
+        break;
+        case 'max-ren': applyScenario("68.0 GW","33.4%","38.5%","61.5%","15.7%","84.3","256928.0 GWH","36249.4","NO",false);
+        break;
+        case 'custom': applyScenario("41.0 GW","11.3%","8.2%","91.8%","6.2%","93.8","219013.9 GWH","-0.029","NO",true);
+        break;
+      }
+    })
+    function applyScenario(tic,rc,rnc,nrnc,rne,nrne,eg,cec,gm,active){
+      console.log(active);
+      $("#TIC").text(tic);
+      $("#RC").text(rc);
+      $("#RNC").text(rnc);
+      $("#NRNC").text(nrnc);
+      $("#RNE").text(rne);
+      $("#NRNE").text(nrne);
+      $("#EG").text(eg);
+      $("#CEC").text(cec);
+      $("#goalsMet").text(gm);
+      if(active == false){
+        $("#container-I").css('opacity',0.1);
+        $("input").prop("disabled",true);
+      }
+      else{
+        $("#container-I").css('opacity',1);
+        $("input").removeProp("disabled");
+      }
+    }
     function COMP(){
-        $("#TIC").text(Math.round(COMP_totalInstalledCapacity())+" MW");
+        $("#TIC").text(truncateDecimals(COMP_totalInstalledCapacity()/1000,1)+" GW");
         $("#RC").text(truncateDecimals(COMP_reserveCapacity()*100,2)+"%");
         $("#RNC").text(truncateDecimals(COMP_totalInstalledCapacityType("R")/COMP_totalInstalledCapacity()*100,2)+"%");
         $("#NRNC").text(truncateDecimals((1-COMP_totalInstalledCapacityType("R")/COMP_totalInstalledCapacity())*100,2)+"%");
@@ -388,6 +419,7 @@ $(document).ready(function(){
         findByKey(DATA,key).value = nucToggles[key].position == true ? nucToggles[key].value : 0;
         }
       }
+
     var width = 300,
     height = 300,
     radius = Math.min(width, height) / 2;
