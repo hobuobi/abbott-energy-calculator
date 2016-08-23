@@ -352,13 +352,13 @@ $(document).ready(function(){
     $("#CEC").text(Math.round(COMP_cecCoal()+COMP_cecNaturalGas()));
     $("#scenarios").change(function(){
       switch($(this).val()){
-        case '2015': applyScenario("41.0 GW","11.3%","8.2%","91.8%","6.2%","93.8","219013.9 GWH","-0.029","NO",false);
+        case '2015': applyScenario("41.0 GW","11.3%","8.2%","91.8%","6.2%","93.8","219013.9 GWH","-0.029","否",false);
         break;
-        case 'taipower': applyScenario("46.6 GW","3.6%","10.3%","89.7%","4.0%","96.0%","225668.0 GWH","36249 kT CO2","NO",false);
+        case 'taipower': applyScenario("46.6 GW","3.6%","10.3%","89.7%","4.0%","96.0%","225668.0 GWH","36249 kT CO2","否",false);
         break;
-        case 'max-ren': applyScenario("68.0 GW","33.4%","38.5%","61.5%","15.7%","84.3","256928.0 GWH","36249.4","NO",false);
+        case 'max-ren': applyScenario("68.0 GW","33.4%","38.5%","61.5%","15.7%","84.3","256928.0 GWH","36249.4","否",false);
         break;
-        case 'custom': applyScenario("41.0 GW","11.3%","8.2%","91.8%","6.2%","93.8","219013.9 GWH","-0.029","NO",true);
+        case 'custom': applyScenario("41.0 GW","11.3%","8.2%","91.8%","6.2%","93.8","219013.9 GWH","-0.029","否",true);
         break;
       }
     })
@@ -394,11 +394,11 @@ $(document).ready(function(){
         $("#goalsMet").text(function(){
           if(COMP_cecCoal()+COMP_cecNaturalGas() < 38082)
           {
-            $(this).attr("color","green"); return "YES";
+            $(this).attr("color","green"); return "是";
           }
           else
           {
-            $(this).attr("color","red"); return "NO";
+            $(this).attr("color","red"); return "否";
           }
         });
     }

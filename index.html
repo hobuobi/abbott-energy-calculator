@@ -3,6 +3,7 @@
 <html>
     <title>Abbott -- Energy Explorer</title>
     <head>
+        <meta charset="UTF-8">
         <!-- CSS -->
 
         <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700|Roboto:300,300i,700" rel="stylesheet">
@@ -31,77 +32,77 @@
         <br>
         <p><i>Select a rate of energy demand growth for the year 2025.</i></p>
         <hr />
-        <h2>SELECT POWER PLANTS</h2>
+        <h2>核電- 台灣有多座核能發電廠, 每一座有2個獨立的反應爐. 請選擇以下營運發電中的反應爐:</h2>
         <hr />
         <label class="toggle">
         <input type="checkbox" class="pplant" id="chinsan1" >
-        <div class="toggle">CHINSAN 1</div>
+        <div class="toggle">核一金山核能發電廠1號機</div>
         </label>
 
         <label class="toggle">
         <input type="checkbox" class="pplant" id="chinsan2">
-        <div class="toggle">CHINSAN 2</div>
+        <div class="toggle">核一金山核能發電廠2號機</div>
         </label>
 
         <label class="toggle">
         <input type="checkbox" class="pplant" id="kuosheng1" >
-        <div class="toggle">KUOSHENG 1</div>
+        <div class="toggle">核二國勝核能發電廠1號機</div>
         </label>
 
         <label class="toggle">
         <input type="checkbox" class="pplant" id="kuosheng2" >
-        <div class="toggle">KUOSHENG 2</div>
+        <div class="toggle">核二國勝核能發電廠2號機</div>
         </label>
 
         <label class="toggle">
         <input type="checkbox" class="pplant" id="maanshan1" >
-        <div class="toggle">MAANSHAN 1</div>
+        <div class="toggle">核三馬鞍山核能發電廠1號機</div>
         </label>
 
         <label class="toggle">
         <input type="checkbox" class="pplant" id="maanshan2" >
-        <div class="toggle">MAANSHAN 2</div>
+        <div class="toggle">核三馬鞍山核能發電廠2號機</div>
         </label>
 
         <label class="toggle">
         <input type="checkbox" class="pplant" id="lungmen1" >
-        <div class="toggle">LUNGMEN 1</div>
+        <div class="toggle">核四龍門核能發電廠1號機</div>
         </label>
 
         <label class="toggle">
         <input type="checkbox" class="pplant" id="lungmen2" >
-        <div class="toggle">LUNGMEN 2</div>
+        <div class="toggle">核四龍門核能發電廠2號機</div>
         </label>
 
         <h2>SELECT RESOURCE VALUES</h2>
         <p><i>All values are in megawatts.</i></p>
         <hr />
-        <h4><i>Fossil Fuels</i></h4>
+        <h4><i>非再生能源- 用以下的slider去設定每個能源的裝置容量數值</i></h4>
         <div class="slide-holder">
-            <div class="slide-title">COAL</div>
+            <div class="slide-title">燃煤</div>
            <input type="range" id="coal">
             <input type="text" class="slide-value" id="coal"></input>
         </div>
 
         <div class="slide-holder">
-            <div class="slide-title">OIL</div>
+            <div class="slide-title">燃油</div>
             <input type="range" id="oil">
             <input type="text" class="slide-value" id="oil"></input>
         </div>
 
         <div class="slide-holder">
-            <div class="slide-title">NATURAL GAS</div>
+            <div class="slide-title">燃氣</div>
             <input type="range" id="gas">
             <input type="text" class="slide-value" id="gas"></input>
         </div>
-        <h4><i>Renewables</i></h4>
+        <h4><i>再生能源-用以下的slider去設定每個能源的裝置容量數值</i></h4>
         <div class="slide-holder">
-            <div class="slide-title">SOLAR</div>
+            <div class="slide-title">太陽能光伏發電</div>
             <input type="range" id="solarpv">
             <input type="text" class="slide-value" id="solarpv"></input>
         </div>
         <div class="slide-holder">
-            <div class="slide-title">WIND</div>
+            <div class="slide-title">風力</div>
             <input type="range" id="wind">
             <input type="text" class="slide-value" id="wind"></input>
         </div>
@@ -120,14 +121,14 @@
         <div class="header-label" align="center">
           <p>Select an energy scenario.</p>
           <select id="scenarios">
-              <option value="2015">2015 Energy Situation</option>
-              <option value="taipower">2025 Energy Prediction (TAIPOWER)</option>
-              <option value="max-ren">2025 Energy Prediction (MAX RENEWABLES)</option>
-              <option value="custom">2025, Custom Input</option>
+              <option value="2015">2015 能源狀態</option>
+              <option value="taipower">2025 能源狀態 (台電預測資訊)</option>
+              <option value="max-ren">2025 能源狀態 (使用者自行輸入資訊)</option>
+              <option value="custom" selected="selected">2025, Custom Input</option>
           </select>
         </div>
         <div class="header-label">
-          <p><span>TOTAL INSTALLED CAPACITY</span></p>
+          <p><span>發電裝置容量(GW) - 總計</span></p>
           <p><span id="TIC"></span></p>
         </div>
         <div class="col-md-12" align="center">
@@ -137,15 +138,15 @@
         <div class="col-md-6">
           <table class="data-table">
             <tr>
-              <td>Reserve Capacity</td>
+              <td>備用容量</td>
               <td><span id="RC"></span></td>
             </tr>
             <tr>
-              <td>Renewable Capacity</td>
+              <td>再生能源裝置容量 (%)</td>
               <td><span id="RNC"></span></td>
             </tr>
             <tr>
-              <td>Non-renewable Capacity</td>
+              <td>非再生能源裝置容量 (%)</td>
               <td><span id="NRNC"></span></td>
             </tr>
           </table>
@@ -157,7 +158,7 @@
         <!-- ELECTRICITY -->
 
         <div class="header-label"  style="margin-top:15px;">
-          <p><span>TOTAL ELECTRICITY</span></p>
+          <p><span>發電量</span></p>
           <p><span id="EG"></span></p>
         </div>
         <div class="col-md-12" align="center">
@@ -167,19 +168,19 @@
         <div class="col-md-6">
           <table class="data-table">
             <tr>
-              <td>Renewable Electricity</td>
+              <td>再生能源發電</td>
               <td><span id="RNE"></span></td>
             </tr>
             <tr>
-              <td>Non-renewable Electricity</td>
+              <td>非再生能源發電</td>
               <td><span id="NRNE"></span></td>
             </tr>
             <tr>
-              <td>Carbon Emmissions</td>
+              <td>排放量改變 (千公噸二氧化碳)</td>
               <td><span id="CEC"></span></td>
             </tr>
             <tr>
-              <td>Emission Goals Met?</td>
+              <td>排放量目標達成?</td>
               <td><span id="goalsMet"></span></td>
             </tr>
           </table>
