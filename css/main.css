@@ -65,7 +65,7 @@ select{
     color: white;
     margin: 0px;
     padding: 10px;
-    background-color: royalblue;
+    background-color: #333;
 }
 .slide-slider {
     vertical-align: top;
@@ -87,6 +87,12 @@ select{
     width:25%;
     text-align: right;
     border: none;
+}
+.slide-holder > #coal, .slide-holder > #gas, .slide-holder > #oil{
+  background-color: #555;
+}
+.slide-holder > #solarpv, .slide-holder > #wind{
+  background-color: teal;
 }
 .slide-value:hover{
   opacity: 0.4;
@@ -116,7 +122,7 @@ select{
 
 input:checked + div.toggle{
     color: white;
-    background-color: green;
+    background-color: royalblue;
     box-shadow: 7px 7px 7px #333;
 }
 
@@ -270,4 +276,9 @@ path{
 }
 .alert:hover{
   background-color: #EEE;
+}
+
+.footer-O{
+  margin: 0;
+  height: 100px;
 }

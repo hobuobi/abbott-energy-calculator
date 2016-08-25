@@ -1,7 +1,7 @@
 <DOCTYPE! html>
 
 <html>
-    <title>Abbott -- Energy Explorer</title>
+    <title>Energy Explorer</title>
     <head>
         <meta charset="UTF-8">
         <!-- CSS -->
@@ -19,18 +19,19 @@
     </head>
 <body>
     <div class="col-md-6" id="container-I">
-        <div style="position:relative;margin:0px;width:100%">
-        <h2>SELECT DEMAND</h2>
-        <select id="demand" style="position:absolute; top:0px; right:0px">
-            <option value="42423">Taipower projection (approx. 2% growth/yr)
- - 42423 MW</option>
-            <option value="35707">No change in demand- 35707 MW</option>
-            <option value="32950">1% Annual Reduction - 32950 MW</option>
-            <option value="30380">2% Annual Reduction - 30380 MW</option>
+        <div class="row">
+        <div class="col-md-4"><h2>SELECT DEMAND</h2></div>
+      <div class="col-md-8">
+        <select id="demand" align="left">
+            <option value="42423">台電預測 (大約每年2%的成長)- 42423 MW</option>
+            <option value="35707">沒有需求上的改變- 35707 MW</option>
+            <option value="32950">1% 年度縮減 (需求)- 32950 MW</option>
+            <option value="30380">2% 年度縮減 (需求)- 30380 MW</option>
         </select>
+      </div>
         </div>
         <br>
-        <p><i>Select a rate of energy demand growth for the year 2025.</i></p>
+        <p><i>選擇2025年能源需求的成長速率</i></p>
         <hr />
         <h2>核電- 台灣有多座核能發電廠, 每一座有2個獨立的反應爐. 請選擇以下營運發電中的反應爐:</h2>
         <hr />
@@ -74,10 +75,10 @@
         <div class="toggle">核四龍門核能發電廠2號機</div>
         </label>
 
-        <h2>SELECT RESOURCE VALUES</h2>
-        <p><i>All values are in megawatts.</i></p>
+        <h2>選擇能源數值</h2>
+        <p><i>所有數值的單位為百萬瓦(MW)</i></p>
         <hr />
-        <h4><i>非再生能源- 用以下的slider去設定每個能源的裝置容量數值</i></h4>
+        <h4>非再生能源- 用以下的slider設定每個能源的裝置容量數值</h4>
         <div class="slide-holder">
             <div class="slide-title">燃煤</div>
            <input type="range" id="coal">
@@ -95,7 +96,7 @@
             <input type="range" id="gas">
             <input type="text" class="slide-value" id="gas"></input>
         </div>
-        <h4><i>再生能源-用以下的slider去設定每個能源的裝置容量數值</i></h4>
+        <h4>再生能源-用以下的slider設定每個能源的裝置容量數值</h4>
         <div class="slide-holder">
             <div class="slide-title">太陽能光伏發電</div>
             <input type="range" id="solarpv">
@@ -119,12 +120,12 @@
           <option value="custom">2025 Energy Situation (Custom Input)</option>
       </select> -->
         <div class="header-label" align="center">
-          <p>Select an energy scenario.</p>
+          <p>選擇一個能源條件</p>
           <select id="scenarios">
               <option value="2015">2015 能源狀態</option>
               <option value="taipower">2025 能源狀態 (台電預測資訊)</option>
               <option value="max-ren">2025 能源狀態 (使用者自行輸入資訊)</option>
-              <option value="custom" selected="selected">2025, Custom Input</option>
+              <option value="custom" selected="selected">2025, 自訂條件</option>
           </select>
         </div>
         <div class="header-label">
@@ -187,7 +188,7 @@
         </div>
       </div>
 
-
+      <div class="row footer-O" align="center"><img src="images/amcham.png"></div>
     </div>
 </body>
 
