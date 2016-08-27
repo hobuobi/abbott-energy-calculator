@@ -5,6 +5,7 @@ var mode = "value";
 function NuclearToggle(o,i,name,v){
     this.position = o;
     this.id = i;
+    this.name = name;
     this.value = v;
     this.capacityFactor = 0.89;
     this.type = ["LC"];
@@ -14,6 +15,7 @@ function ResourceSlider(min, max, i, name, val,type,CF){
     this.min = min;
     this.max = max;
     this.id = i;
+    this.name = name;
     this.value = val;
     this.type = type;
     this.capacityFactor = CF;
@@ -21,6 +23,7 @@ function ResourceSlider(min, max, i, name, val,type,CF){
 
 function ResourceConstant(id,name,val,CF,type){
     this.id = id;
+    this.name = name;
     this.value = val;
     this.capacityFactor = CF;
     this.type = type;
@@ -93,6 +96,7 @@ var constants = {
 for(var item in nucToggles){
     DATA.push({
         "id" : nucToggles[item].id,
+        "name": nucToggles[item].name,
         "value": nucToggles[item].position == true ? nucToggles[item].value : 0,
         "electricity": nucToggles[item].position == true ? nucToggles[item].getElectricityGenerated() : 0,
         "type": nucToggles[item].type
@@ -101,6 +105,7 @@ for(var item in nucToggles){
 for(var item in resourceSliders){
     DATA.push({
         "id" : resourceSliders[item].id,
+        "name": resourceSliders[item].name,
         "value": resourceSliders[item].value,
         "electricity": resourceSliders[item].getElectricityGenerated(),
         "type": resourceSliders[item].type
@@ -109,6 +114,7 @@ for(var item in resourceSliders){
 for(var item in constants){
     DATA.push({
         "id" : constants[item].id,
+        "name": constants[item].name,
         "value": constants[item].value,
         "electricity": constants[item].getElectricityGenerated(),
         "type": constants[item].type
@@ -279,7 +285,7 @@ $(document).ready(function(){
         COMP();
         if(id == default_id){
             default_value= item[mode]+" ("+truncateDecimals(item[mode]*100/COMP_sum(mode),2)+"%)"
-            $("#detail-name").text(item.id.toUpperCase());
+            $("#detail-name").text(item.name);
             $("#detail-value").text(default_value);
         }
         updateVisualization();
@@ -291,12 +297,13 @@ $(document).ready(function(){
             var val = document.getElementById(id).value
             resourceSliders[id].setValue(+val);
             $(this).next().val(val+" MW");
-
+            default_id = id;
+            default_id_2 = id;
             if(id == default_id)
             {
                 var item = findByKey(DATA,id)
                 default_value = item[mode]+" ("+truncateDecimals(item[mode]*100/COMP_totalInstalledCapacity(),2)+"%)";
-                $("#detail-name").text(item.id.toUpperCase());
+                $("#detail-name").text(item.name);
                 $("#detail-value").text(function(){
                     return item.value+" ("+truncateDecimals(item.value*100/COMP_totalInstalledCapacity(),2)+"%)"
                 });
@@ -305,7 +312,7 @@ $(document).ready(function(){
             {
                 var item = findByKey(DATA,id)
                 default_value_2 = truncateDecimals(item.electricity,0)+" ("+truncateDecimals(item.electricity*100/COMP_electricityGenerated(),2)+"%)";
-                $("#detail-name-elec").text(item.id.toUpperCase());
+                $("#detail-name-elec").text(item.name);
                 $("#detail-elec").text(default_value_2);
             }
             $("#CEC").text(Math.round(COMP_cecCoal()+COMP_cecNaturalGas()));
@@ -329,14 +336,14 @@ $(document).ready(function(){
             {
                 var item = findByKey(DATA,id)
                 default_value = item[mode]+" ("+truncateDecimals(item[mode]*100/COMP_totalInstalledCapacity(),2)+"%)";
-                $("#detail-name").text(item.id.toUpperCase());
+                $("#detail-name").text(item.name);
                 $("#detail-value").text(default_value);
             }
             if(id == default_id_2)
             {
                 var item = findByKey(DATA,id)
                 default_value_2 = truncateDecimals(item.electricity,0)+" ("+truncateDecimals(item.electricity*100/COMP_electricityGenerated(),2)+"%)";
-                $("#detail-name-elec").text(item.id.toUpperCase());
+                $("#detail-name-elec").text(item.name);
                 $("#detail-elec").text(default_value_2);
             }
             $("#CEC").text(Math.round(COMP_cecCoal()+COMP_cecNaturalGas()));
@@ -494,13 +501,13 @@ $(document).ready(function(){
     g
         .on("mouseover", function(d){
             d3.select(this).transition().duration(300).attr('opacity',0.5);
-            $("#detail-name").text(d.data.id.toUpperCase());
+            $("#detail-name").text(d.data.name);
             $("#detail-value").text((d.data).value+" ("+truncateDecimals(d.data.value*100/COMP_totalInstalledCapacity(),2)+"%)");
             $(".detail-label").css("border-left-color",color(d.data.type))
         })
         .on("mouseout", function(d){
             d3.select(this).transition().duration(300).attr('opacity',1);
-            $("#detail-name").text(default_id.toUpperCase());
+            $("#detail-name").text(d.data.name);
             $("#detail-value").text(default_value);
         })
         .on("click", function(d){
@@ -511,7 +518,7 @@ $(document).ready(function(){
     g_elec
         .on("mouseover", function(d){
             d3.select(this).transition().duration(200).attr('opacity',0.5);
-            $("#detail-name-elec").text(d.data.id.toUpperCase());
+            $("#detail-name-elec").text(d.data.name);
             $("#detail-elec").text(function(){
                 return truncateDecimals(d.data.electricity,0)+" ("+truncateDecimals(d.data.electricity*100/COMP_electricityGenerated(),2)+"%)"
             });
@@ -519,7 +526,7 @@ $(document).ready(function(){
         })
         .on("mouseout", function(d){
             d3.select(this).transition().duration(200).attr('opacity',1);
-            $("#detail-name-elec").text(default_id_2.toUpperCase());
+            $("#detail-name-elec").text(d.data.name);
             $("#detail-elec").text(default_value_2);
         })
         .on("click", function(d){
