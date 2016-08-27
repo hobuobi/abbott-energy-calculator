@@ -67,14 +67,14 @@ ResourceConstant.prototype.getElectricityGenerated = function() {
 }
 
 var nucToggles = {
-    "chinsan1": new NuclearToggle(true,"chinsan1",636),
-    "chinsan2": new NuclearToggle(true,"chinsan2",636),
-    "kuosheng1": new NuclearToggle(true,"kuosheng1",985),
-    "kuosheng2": new NuclearToggle(true,"kuosheng2",985),
-    "maanshan1": new NuclearToggle(true,"maanshan1",951),
-    "maanshan2": new NuclearToggle(true,"maanshan2",951),
-    "lungmen1": new NuclearToggle(true,"lungmen1",1350),
-    "lungmen2": new NuclearToggle(true,"lungmen2",1350)
+    "chinsan1": new NuclearToggle(false,"chinsan1",636),
+    "chinsan2": new NuclearToggle(false,"chinsan2",636),
+    "kuosheng1": new NuclearToggle(false,"kuosheng1",985),
+    "kuosheng2": new NuclearToggle(false,"kuosheng2",985),
+    "maanshan1": new NuclearToggle(false,"maanshan1",951),
+    "maanshan2": new NuclearToggle(false,"maanshan2",951),
+    "lungmen1": new NuclearToggle(false,"lungmen1",1350),
+    "lungmen2": new NuclearToggle(false,"lungmen2",1350)
 
 }
 var resourceSliders = {
