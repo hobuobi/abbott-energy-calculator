@@ -2,7 +2,7 @@
 
 var DATA= [];
 var mode = "value";
-function NuclearToggle(o,i,v){
+function NuclearToggle(o,i,name,v){
     this.position = o;
     this.id = i;
     this.value = v;
@@ -10,7 +10,7 @@ function NuclearToggle(o,i,v){
     this.type = ["LC"];
 }
 
-function ResourceSlider(min, max, i, val,type,CF){
+function ResourceSlider(min, max, i, name, val,type,CF){
     this.min = min;
     this.max = max;
     this.id = i;
@@ -19,7 +19,7 @@ function ResourceSlider(min, max, i, val,type,CF){
     this.capacityFactor = CF;
 }
 
-function ResourceConstant(id, val,CF,type){
+function ResourceConstant(id,name,val,CF,type){
     this.id = id;
     this.value = val;
     this.capacityFactor = CF;
@@ -67,32 +67,32 @@ ResourceConstant.prototype.getElectricityGenerated = function() {
 }
 
 var nucToggles = {
-    "chinsan1": new NuclearToggle(false,"chinsan1",636),
-    "chinsan2": new NuclearToggle(false,"chinsan2",636),
-    "kuosheng1": new NuclearToggle(false,"kuosheng1",985),
-    "kuosheng2": new NuclearToggle(false,"kuosheng2",985),
-    "maanshan1": new NuclearToggle(false,"maanshan1",951),
-    "maanshan2": new NuclearToggle(false,"maanshan2",951),
-    "lungmen1": new NuclearToggle(false,"lungmen1",1350),
-    "lungmen2": new NuclearToggle(false,"lungmen2",1350)
+    "chinsan1": new NuclearToggle(false,"chinsan1","核一金山核能發電廠1號機",636),
+    "chinsan2": new NuclearToggle(false,"chinsan2","核一金山核能發電廠2號機",636),
+    "kuosheng1": new NuclearToggle(false,"kuosheng1","核二國勝核能發電廠1號機",985),
+    "kuosheng2": new NuclearToggle(false,"kuosheng2","核二國勝核能發電廠2號機",985),
+    "maanshan1": new NuclearToggle(false,"maanshan1","核三馬鞍山核能發電廠1號機",951),
+    "maanshan2": new NuclearToggle(false,"maanshan2","核三馬鞍山核能發電廠2號機",951),
+    "lungmen1": new NuclearToggle(false,"lungmen1","核四龍門核能發電廠1號機",1350),
+    "lungmen2": new NuclearToggle(false,"lungmen2","核四龍門核能發電廠2號機",1350)
 
 }
 var resourceSliders = {
-    "solarpv": new ResourceSlider(669,20000,"solarpv", 669,["LC","R"],.13),
-    "wind": new ResourceSlider(652, 4000, "wind", 652,["LC","R"],.3),
-    "coal": new ResourceSlider(0,15297,"coal", 10697,["FF"],.84),
-    "oil": new ResourceSlider(0, 3325, "oil", 3325,["FF"],.21),
-    "gas": new ResourceSlider(0,26090, "gas", 15244,["FF"],.52)
+    "solarpv": new ResourceSlider(669,20000,"solarpv","太陽能光伏發電",669,["LC","R"],.13),
+    "wind": new ResourceSlider(652, 4000, "wind","風力",652,["LC","R"],.3),
+    "coal": new ResourceSlider(0,15297,"coal","燃煤",10697,["FF"],.84),
+    "oil": new ResourceSlider(0, 3325, "oil","燃油",3325,["FF"],.21),
+    "gas": new ResourceSlider(0,26090, "gas","燃氣",15244,["FF"],.52)
 }
 var constants = {
-    "biogas": new ResourceConstant("biogas", 623,.65,["R"]),
-    "hydrostorage": new ResourceConstant("hydrostorage",2602,1.0,["LC","R"]),
-    "hydropower": new ResourceConstant("hydropower", 2102,.28,["LC", "R"]),
-    "geothermal": new ResourceConstant("geothermal", 50,0,["LC", "R"])
+    "biogas": new ResourceConstant("biogas","沼氣",623,.65,["R"]),
+    "hydrostorage": new ResourceConstant("hydrostorage","抽蓄水力",2602,1.0,["LC","R"]),
+    "hydropower": new ResourceConstant("hydropower","水力",2102,.28,["LC", "R"]),
+    "geothermal": new ResourceConstant("geothermal","地熱能",50,0,["LC", "R"])
 }
 for(var item in nucToggles){
     DATA.push({
-        "name" : nucToggles[item].id,
+        "id" : nucToggles[item].id,
         "value": nucToggles[item].position == true ? nucToggles[item].value : 0,
         "electricity": nucToggles[item].position == true ? nucToggles[item].getElectricityGenerated() : 0,
         "type": nucToggles[item].type
@@ -100,7 +100,7 @@ for(var item in nucToggles){
 }
 for(var item in resourceSliders){
     DATA.push({
-        "name" : resourceSliders[item].id,
+        "id" : resourceSliders[item].id,
         "value": resourceSliders[item].value,
         "electricity": resourceSliders[item].getElectricityGenerated(),
         "type": resourceSliders[item].type
@@ -108,7 +108,7 @@ for(var item in resourceSliders){
 }
 for(var item in constants){
     DATA.push({
-        "name" : constants[item].id,
+        "id" : constants[item].id,
         "value": constants[item].value,
         "electricity": constants[item].getElectricityGenerated(),
         "type": constants[item].type
@@ -183,7 +183,7 @@ function truncateDecimals (num, digits) {
 function findByKey(array,key){
     for(var x in array)
     {
-        if(array[x].name == key){ return array[x]}
+        if(array[x].id == key){ return array[x]}
     }
     return null;
 }
@@ -279,7 +279,7 @@ $(document).ready(function(){
         COMP();
         if(id == default_id){
             default_value= item[mode]+" ("+truncateDecimals(item[mode]*100/COMP_sum(mode),2)+"%)"
-            $("#detail-name").text(item.name.toUpperCase());
+            $("#detail-name").text(item.id.toUpperCase());
             $("#detail-value").text(default_value);
         }
         updateVisualization();
@@ -296,7 +296,7 @@ $(document).ready(function(){
             {
                 var item = findByKey(DATA,id)
                 default_value = item[mode]+" ("+truncateDecimals(item[mode]*100/COMP_totalInstalledCapacity(),2)+"%)";
-                $("#detail-name").text(item.name.toUpperCase());
+                $("#detail-name").text(item.id.toUpperCase());
                 $("#detail-value").text(function(){
                     return item.value+" ("+truncateDecimals(item.value*100/COMP_totalInstalledCapacity(),2)+"%)"
                 });
@@ -305,7 +305,7 @@ $(document).ready(function(){
             {
                 var item = findByKey(DATA,id)
                 default_value_2 = truncateDecimals(item.electricity,0)+" ("+truncateDecimals(item.electricity*100/COMP_electricityGenerated(),2)+"%)";
-                $("#detail-name-elec").text(item.name.toUpperCase());
+                $("#detail-name-elec").text(item.id.toUpperCase());
                 $("#detail-elec").text(default_value_2);
             }
             $("#CEC").text(Math.round(COMP_cecCoal()+COMP_cecNaturalGas()));
@@ -329,14 +329,14 @@ $(document).ready(function(){
             {
                 var item = findByKey(DATA,id)
                 default_value = item[mode]+" ("+truncateDecimals(item[mode]*100/COMP_totalInstalledCapacity(),2)+"%)";
-                $("#detail-name").text(item.name.toUpperCase());
+                $("#detail-name").text(item.id.toUpperCase());
                 $("#detail-value").text(default_value);
             }
             if(id == default_id_2)
             {
                 var item = findByKey(DATA,id)
                 default_value_2 = truncateDecimals(item.electricity,0)+" ("+truncateDecimals(item.electricity*100/COMP_electricityGenerated(),2)+"%)";
-                $("#detail-name-elec").text(item.name.toUpperCase());
+                $("#detail-name-elec").text(item.id.toUpperCase());
                 $("#detail-elec").text(default_value_2);
             }
             $("#CEC").text(Math.round(COMP_cecCoal()+COMP_cecNaturalGas()));
@@ -494,7 +494,7 @@ $(document).ready(function(){
     g
         .on("mouseover", function(d){
             d3.select(this).transition().duration(300).attr('opacity',0.5);
-            $("#detail-name").text(d.data.name.toUpperCase());
+            $("#detail-name").text(d.data.id.toUpperCase());
             $("#detail-value").text((d.data).value+" ("+truncateDecimals(d.data.value*100/COMP_totalInstalledCapacity(),2)+"%)");
             $(".detail-label").css("border-left-color",color(d.data.type))
         })
@@ -504,14 +504,14 @@ $(document).ready(function(){
             $("#detail-value").text(default_value);
         })
         .on("click", function(d){
-            default_id= d.data.name;
+            default_id= d.data.id;
             default_value = d.data[mode]+" ("+truncateDecimals(d.data[mode]*100/COMP_totalInstalledCapacity(),2)+"%)"
         })
 
     g_elec
         .on("mouseover", function(d){
             d3.select(this).transition().duration(200).attr('opacity',0.5);
-            $("#detail-name-elec").text(d.data.name.toUpperCase());
+            $("#detail-name-elec").text(d.data.id.toUpperCase());
             $("#detail-elec").text(function(){
                 return truncateDecimals(d.data.electricity,0)+" ("+truncateDecimals(d.data.electricity*100/COMP_electricityGenerated(),2)+"%)"
             });
@@ -523,7 +523,7 @@ $(document).ready(function(){
             $("#detail-elec").text(default_value_2);
         })
         .on("click", function(d){
-            default_id_2= d.data.name;
+            default_id_2= d.data.id;
             default_value_2 = truncateDecimals(d.data.electricity,0)+" ("+truncateDecimals(d.data.electricity*100/COMP_electricityGenerated(),2)+"%)"
         })
     function toggle(){
